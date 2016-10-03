@@ -11,6 +11,7 @@ import java.io.*;
 public class MainActivity extends Activity 
 {
 	TextView gpsLabel;
+	TextView gpsLabel2;
 	TextView gpsStatusLabel;
 	EditText waypointName;
 	EditText routeName;
@@ -36,6 +37,7 @@ public class MainActivity extends Activity
 		
 		//statusLabel = (TextView)findViewById(R.id.status_label);
 		gpsLabel = (TextView)findViewById(R.id.gps_label);
+		gpsLabel2 = (TextView)findViewById(R.id.gps_label2);
 		gpsStatusLabel = (TextView)findViewById(R.id.gps_status_label);
 		waypointName = (EditText)findViewById(R.id.waypoint_name);
 		routeName = (EditText)findViewById(R.id.route_name);
@@ -56,6 +58,10 @@ public class MainActivity extends Activity
 								gpsLabel.setText("lat: " + loc.getLatitude() +
 								" lon: " + loc.getLongitude() +
 								" alt: " + loc.getAltitude());
+								
+								gpsLabel2.setText("acc: " + loc.getAccuracy() +
+									" bearing: " + loc.getBearing() +
+									" speed: " + loc.getSpeed());
 							}
 					});
 					
@@ -65,9 +71,9 @@ public class MainActivity extends Activity
 						{
 							lastRouteLocation = loc;
 							
-							if (!routeData.ContainsKey(currentRouteName))
+							if (!routeData.containsKey(currentRouteName))
 							{
-								routeData.add(currentRouteName, new ArrayList<Waypoint>());
+								routeData.put(currentRouteName, new ArrayList<Waypoint>());
 							}
 
 							routeData.get(currentRouteName).add(new Waypoint(currentRouteName, loc));
@@ -183,10 +189,18 @@ public class MainActivity extends Activity
 
 			for (String key : routeData.keySet())
 			{
-				writer.println("<Placemark><name>" + wp.Name + "</name>");
+				writer.println("<Placemark><name>" + key + "</name>");
 				writer.println("<visibility>1</visibility><styleUrl>#yellowLineGreenPoly</styleUrl>");
 				writer.println("<LineString><extrude>1</extrude><tessellate>1</tessellate><altitudeMode>absolute</altitudeMode>");
         		writer.println("<coordinates>");
+				
+				for (Waypoint wp : routeData.get(key))
+				{
+					writer.println(Double.toString(wp.WaypointLocation.getLongitude()) +
+						"," + wp.WaypointLocation.getLatitude() +
+						"," + wp.WaypointLocation.getAltitude());
+				}
+				
 				writer.println("</coordinates>");
 				writer.println("</Placemark>");
 			}
