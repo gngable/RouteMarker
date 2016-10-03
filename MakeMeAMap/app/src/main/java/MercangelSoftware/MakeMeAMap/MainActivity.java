@@ -143,7 +143,23 @@ public class MainActivity extends Activity
 			writer = new PrintWriter(saveFileName.getText().toString(), "UTF-8");
 			
 			writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-			//writer.println(
+			writer.println("<kml xmlns=\"http://www.opengis.net/kml/2.2\">");
+			writer.println("<Document><name>KmlFile</name>");
+
+			for (Waypoint wp : waypoints)
+			{
+				writer.println("<Placemark>");
+				writer.println("<name>" + wp.Name + "</name>");
+				writer.println("<Point>");
+				writer.println("<coordinates>" + wp.WaypointLocation.getLongitude() +
+					"," + wp.WaypointLocation.getLatitude() +
+					"," + wp.WaypointLocation.getAltitude() +
+					"</coordinates>");
+				writer.println("</Point>");
+				writer.println("</Placemark>");
+			}
+
+			writer.println("</Document></kml>")
 		}
 		catch (UnsupportedEncodingException e)
 		{}
