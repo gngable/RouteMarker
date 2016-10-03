@@ -6,6 +6,7 @@ import android.location.*;
 import android.widget.*;
 import android.view.*;
 import java.util.*;
+import java.io.*;
 
 public class MainActivity extends Activity 
 {
@@ -13,6 +14,7 @@ public class MainActivity extends Activity
 	TextView gpsStatusLabel;
 	EditText waypointName;
 	EditText routeName;
+	EditText saveFileName;
 	
 	Location lastLocation;
 	int lastStatus = -1;
@@ -36,6 +38,7 @@ public class MainActivity extends Activity
 		gpsStatusLabel = (TextView)findViewById(R.id.gps_status_label);
 		waypointName = (EditText)findViewById(R.id.waypoint_name);
 		routeName = (EditText)findViewById(R.id.route_name);
+		saveFileName = (EditText)findViewById(R.id.save_file_name);
 		
 		LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
 		
@@ -50,7 +53,8 @@ public class MainActivity extends Activity
 							public void run()
 							{
 								gpsLabel.setText("lat: " + loc.getLatitude() +
-								" lon: " + loc.getLongitude());
+								" lon: " + loc.getLongitude() +
+								" alt: " + loc.getAltitude());
 							}
 					});
 					
@@ -128,5 +132,26 @@ public class MainActivity extends Activity
 		recordingRoute = false;
 		
 		Toast.makeText(getApplicationContext(), "Route " + currentRouteName + " stopped", Toast.LENGTH_LONG).show();
+	}
+	
+	public void saveButtonClick(View view)
+	{
+		PrintWriter writer = null;
+		
+		try
+		{
+			writer = new PrintWriter(saveFileName.getText().toString(), "UTF-8");
+			
+			writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+			//writer.println(
+		}
+		catch (UnsupportedEncodingException e)
+		{}
+		catch (FileNotFoundException e)
+		{}
+		finally
+		{
+			if (writer != null) writer.close();
+		}
 	}
 }

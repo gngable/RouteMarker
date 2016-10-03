@@ -19,6 +19,8 @@ public final class R {
         public static final int route_name=0x7f060004;
         public static final int route_start_button=0x7f060005;
         public static final int route_stop_button=0x7f060006;
+        public static final int save_button=0x7f060008;
+        public static final int save_file_name=0x7f060007;
         public static final int waypoint_button=0x7f060003;
         public static final int waypoint_name=0x7f060002;
     }
