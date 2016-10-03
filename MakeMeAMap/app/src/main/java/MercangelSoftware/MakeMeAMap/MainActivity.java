@@ -159,7 +159,32 @@ public class MainActivity extends Activity
 				writer.println("</Placemark>");
 			}
 
-			writer.println("</Document></kml>")
+			writer.println("<Style id=\"yellowLineGreenPoly\">");
+			writer.println("<LineStyle>");
+			writer.println("<color>7f00ffff</color>");
+			writer.println("<width>4</width>");
+			writer.println("</LineStyle>");
+			writer.println("<PolyStyle><color>7f00ff00</color></PolyStyle>")
+			writer.println("</Style>");
+
+			// ArrayList<String> names = new ArrayList<String();
+
+			// for (Waypoint wp : routeData)
+			// {
+			// 	if (names.c)
+			// }
+
+			for (Waypoint wp : routeData)
+			{
+				writer.println("<Placemark><name>" + wp.Name + "</name>");
+				writer.println("<visibility>1</visibility><styleUrl>#yellowLineGreenPoly</styleUrl>");
+				writer.println("<LineString><extrude>1</extrude><tessellate>1</tessellate><altitudeMode>absolute</altitudeMode>");
+        		writer.println("<coordinates>");
+				writer.println("</coordinates>");
+				writer.println("</Placemark>");
+			}
+
+			writer.println("</Document></kml>");
 		}
 		catch (UnsupportedEncodingException e)
 		{}
