@@ -21,7 +21,8 @@ public class MainActivity extends Activity
 	
 	ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
 	
-	ArrayList<Waypoint> routeData = new ArrayList<Waypoint>();
+	HashMap<String, ArrayList<Waypoint>> routeData = new HashMap<String, ArrayList<Waypoint>>();
+	//ArrayList<Waypoint> routeData = new ArrayList<Waypoint>();
 	
 	String currentRouteName = "";
 	boolean recordingRoute = false;
@@ -63,6 +64,8 @@ public class MainActivity extends Activity
 						if (lastRouteLocation == null || lastRouteLocation.distanceTo(loc) > 2.0)
 						{
 							lastRouteLocation = loc;
+							
+							
 							routeData.add(new Waypoint(currentRouteName, loc));
 						}
 					}
