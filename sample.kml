@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+  <Document>
+    <name>KmlFile</name>
+    <Style id="yellowLineGreenPoly">
+      <LineStyle>
+        <color>7f00ffff</color>
+        <width>4</width>
+      </LineStyle>
+      <PolyStyle>
+        <color>7f00ff00</color>
+      </PolyStyle>
+    </Style>
+    <Placemark>
+      <name>Absolute Extruded</name>
+      <visibility>1</visibility>
+      <description>Transparent green wall with yellow outlines</description>
+      <styleUrl>#yellowLineGreenPoly</styleUrl>
+      <LineString>
+        <extrude>1</extrude>
+        <tessellate>1</tessellate>
+        <altitudeMode>absolute</altitudeMode>
+        <coordinates>
+          -96.16453342,28.48516846,14
+		  -96.26453342,28.48516846,14
+		  -96.36453342,28.48516846,14
+		  -96.46453342,28.48516846,0
+		  -96.56453342,28.48516846,0
+		  -96.66453342,28.48516846,0
+		  -96.76453342,28.48516846,0
+		  -96.86453342,28.48516846,0
+        </coordinates>
+      </LineString>
+    </Placemark>
+	<Placemark>
+    <name>Simple placemark</name>
+    <description>
+      Attached to the ground. Intelligently places itself at the
+      height of the underlying terrain.
+    </description>
+    <Point>
+      <coordinates>-96.16453342,28.48516846,0</coordinates>
+    </Point>
+  </Placemark>
+  </Document>
+</kml>
