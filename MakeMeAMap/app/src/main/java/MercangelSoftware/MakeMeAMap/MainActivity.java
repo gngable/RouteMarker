@@ -4,13 +4,18 @@ import android.app.*;
 import android.os.*;
 import android.location.*;
 import android.widget.*;
+import android.view.*;
+import java.util.*;
 
 public class MainActivity extends Activity 
 {
-	TextView statusLabel;
 	TextView gpsLabel;
+	EditText waypointName;
+	
 	Location lastLocation;
 	int lastStatus = -1;
+	
+	ArrayList waypoints = new ArrayList();
 	
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -20,6 +25,7 @@ public class MainActivity extends Activity
 		
 		//statusLabel = (TextView)findViewById(R.id.status_label);
 		gpsLabel = (TextView)findViewById(R.id.gps_label);
+		waypointName = (EditText)findViewById(R.id.waypoint_name);
 		
 		LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
 		
@@ -79,4 +85,12 @@ public class MainActivity extends Activity
 			
 		});
     }
+	
+	public void waypointButtonClick(View view)
+	{
+		Waypoint waypoint = new Waypoint(waypointName.getText().toString(), lastLocation);
+		waypoints.add(waypoint);
+		
+		Toast.makeText(getApplicationContext(), "Waypoint " + waypointName.getText() + " saved", Toast.LENGTH_LONG).show();
+	}
 }
