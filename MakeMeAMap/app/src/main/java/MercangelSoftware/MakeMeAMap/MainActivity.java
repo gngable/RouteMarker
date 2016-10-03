@@ -67,7 +67,7 @@ public class MainActivity extends Activity
 					
 					if (recordingRoute)
 					{
-						if (lastRouteLocation == null || lastRouteLocation.distanceTo(loc) > 2.0)
+						if (lastRouteLocation == null || lastRouteLocation.distanceTo(loc) > 1.0)
 						{
 							lastRouteLocation = loc;
 							
