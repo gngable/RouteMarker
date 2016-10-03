@@ -10,12 +10,20 @@ import java.util.*;
 public class MainActivity extends Activity 
 {
 	TextView gpsLabel;
+	TextView gpsStatusLabel;
 	EditText waypointName;
+	EditText routeName;
 	
 	Location lastLocation;
 	int lastStatus = -1;
 	
-	ArrayList waypoints = new ArrayList();
+	ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
+	
+	ArrayList<Waypoint> routeData = new ArrayList<Waypoint>();
+	
+	String currentRouteName = "";
+	boolean recordingRoute = false;
+	Location lastRouteLocation;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -25,7 +33,9 @@ public class MainActivity extends Activity
 		
 		//statusLabel = (TextView)findViewById(R.id.status_label);
 		gpsLabel = (TextView)findViewById(R.id.gps_label);
+		gpsStatusLabel = (TextView)findViewById(R.id.gps_status_label);
 		waypointName = (EditText)findViewById(R.id.waypoint_name);
+		routeName = (EditText)findViewById(R.id.route_name);
 		
 		LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
 		
@@ -43,6 +53,15 @@ public class MainActivity extends Activity
 								" lon: " + loc.getLongitude());
 							}
 					});
+					
+					if (recordingRoute)
+					{
+						if (lastRouteLocation == null || lastRouteLocation.distanceTo(loc) > 2.0)
+						{
+							lastRouteLocation = loc;
+							routeData.add(new Waypoint(currentRouteName, loc));
+						}
+					}
 				}
 
 				@Override
@@ -66,6 +85,8 @@ public class MainActivity extends Activity
 					{
 						statustext = "Temporarily Unavailable";
 					}
+					
+					gpsStatusLabel.setText("GPS Status: " + statustext);
 					
 					Toast.makeText(getApplicationContext(), provider + ":" + statustext, Toast.LENGTH_LONG).show();
 				}
@@ -92,5 +113,20 @@ public class MainActivity extends Activity
 		waypoints.add(waypoint);
 		
 		Toast.makeText(getApplicationContext(), "Waypoint " + waypointName.getText() + " saved", Toast.LENGTH_LONG).show();
+	}
+	
+	public void routeStartButtonClick(View view)
+	{
+		currentRouteName = routeName.getText().toString();
+		recordingRoute = true;
+		
+		Toast.makeText(getApplicationContext(), "Route " + currentRouteName + " started", Toast.LENGTH_LONG).show();
+	}
+	
+	public void routeStopButtonClick(View view)
+	{
+		recordingRoute = false;
+		
+		Toast.makeText(getApplicationContext(), "Route " + currentRouteName + " stopped", Toast.LENGTH_LONG).show();
 	}
 }
