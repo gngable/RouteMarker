@@ -9,6 +9,8 @@ public class MainActivity extends Activity
 {
 	TextView statusLabel;
 	TextView gpsLabel;
+	Location lastLocation;
+	int lastStatus = -1;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -16,7 +18,7 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 		
-		statusLabel = (TextView)findViewById(R.id.status_label);
+		//statusLabel = (TextView)findViewById(R.id.status_label);
 		gpsLabel = (TextView)findViewById(R.id.gps_label);
 		
 		LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
@@ -38,9 +40,28 @@ public class MainActivity extends Activity
 				}
 
 				@Override
-				public void onStatusChanged(String p1, int p2, Bundle p3)
+				public void onStatusChanged(String provider, int status, Bundle bundle)
 				{
-					// TODO: Implement this method
+					if (status == lastStatus) return;
+					
+					lastStatus = status;
+					
+					String statustext = "";
+					
+					if (status == LocationProvider.OUT_OF_SERVICE)
+					{
+						statustext = "Out of Service";
+					}
+					else if (status == LocationProvider.AVAILABLE)
+					{
+						statustext = "Available";
+					}
+					else if (status == LocationProvider.TEMPORARILY_UNAVAILABLE)
+					{
+						statustext = "Temporarily Unavailable";
+					}
+					
+					Toast.makeText(getApplicationContext(), provider + ":" + statustext, Toast.LENGTH_LONG).show();
 				}
 
 				@Override
