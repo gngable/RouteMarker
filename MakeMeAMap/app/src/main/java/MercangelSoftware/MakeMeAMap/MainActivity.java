@@ -65,8 +65,12 @@ public class MainActivity extends Activity
 						{
 							lastRouteLocation = loc;
 							
-							
-							//routeData.add(new Waypoint(currentRouteName, loc));
+							if (!routeData.ContainsKey(currentRouteName))
+							{
+								routeData.add(currentRouteName, new ArrayList<Waypoint>());
+							}
+
+							routeData.get(currentRouteName).add(new Waypoint(currentRouteName, loc));
 						}
 					}
 				}
@@ -177,7 +181,7 @@ public class MainActivity extends Activity
 			// 	if (names.c)
 			// }
 
-			for (Waypoint wp : routeData)
+			for (String key : routeData.keySet())
 			{
 				writer.println("<Placemark><name>" + wp.Name + "</name>");
 				writer.println("<visibility>1</visibility><styleUrl>#yellowLineGreenPoly</styleUrl>");
