@@ -66,7 +66,7 @@ public class MainActivity extends Activity
 							lastRouteLocation = loc;
 							
 							
-							routeData.add(new Waypoint(currentRouteName, loc));
+							//routeData.add(new Waypoint(currentRouteName, loc));
 						}
 					}
 				}
@@ -167,7 +167,7 @@ public class MainActivity extends Activity
 			writer.println("<color>7f00ffff</color>");
 			writer.println("<width>4</width>");
 			writer.println("</LineStyle>");
-			writer.println("<PolyStyle><color>7f00ff00</color></PolyStyle>")
+			writer.println("<PolyStyle><color>7f00ff00</color></PolyStyle>");
 			writer.println("</Style>");
 
 			// ArrayList<String> names = new ArrayList<String();
