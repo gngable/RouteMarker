@@ -45,7 +45,7 @@ public class MainActivity extends Activity
 		
 		LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
 		
-		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5000, 10, new LocationListener(){
+		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 0, new LocationListener(){
 
 				@Override
 				public void onLocationChanged(Location location)
@@ -233,7 +233,7 @@ public class MainActivity extends Activity
 						"," + wp.Altitude);
 				}
 				
-				writer.println("</coordinates>");
+				writer.println("</coordinates></LineString>");
 				writer.println("</Placemark>");
 			}
 			}
