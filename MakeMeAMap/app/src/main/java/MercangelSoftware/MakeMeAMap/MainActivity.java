@@ -51,6 +51,26 @@ public class MainActivity extends Activity
 				public void onLocationChanged(Location location)
 				{
 					final Location loc = location;
+					
+					lastLocation = location;
+					
+					String bearing = "";
+					float bear = loc.getBearing();
+					float fourtyfivehalf = 45/2;
+					
+					if (bear <= fourtyfivehalf && bear > -fourtyfivehalf)
+					{
+						bearing = "North";
+					}
+					else if (bear <= 45 + fourtyfivehalf && bear > 45 - fourtyfivehalf)
+					{
+						bearing = "Northeast";
+					}
+					else if (bear <= 90 + fourtyfivehalf && bear > 90 - fourtyfivehalf)
+					{
+						bearing = "East";
+					}
+					
 					gpsLabel.post(new Runnable(){
 							@Override
 							public void run()
@@ -144,32 +164,42 @@ public class MainActivity extends Activity
 	{
 		recordingRoute = false;
 		
-		Toast.makeText(getApplicationContext(), "Route " + currentRouteName + " stopped", Toast.LENGTH_LONG).show();
+		toast("Route " + currentRouteName + " stopped");
+	}
+	
+	private void toast(String message)
+	{
+		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
 	}
 	
 	public void saveButtonClick(View view)
 	{
+		toast("Saving " + saveFileName.getText().toString());
 		PrintWriter writer = null;
 		
 		try
 		{
-			writer = new PrintWriter(saveFileName.getText().toString(), "UTF-8");
+			File f = new File(getExternalFilesDir(null), saveFileName.getText().toString());
+			writer = new PrintWriter(f, "UTF-8");
 			
 			writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 			writer.println("<kml xmlns=\"http://www.opengis.net/kml/2.2\">");
 			writer.println("<Document><name>KmlFile</name>");
-
+			
+			if (waypoints.size() > 0)
+			{
 			for (Waypoint wp : waypoints)
 			{
 				writer.println("<Placemark>");
 				writer.println("<name>" + wp.Name + "</name>");
 				writer.println("<Point>");
-				writer.println("<coordinates>" + wp.WaypointLocation.getLongitude() +
-					"," + wp.WaypointLocation.getLatitude() +
-					"," + wp.WaypointLocation.getAltitude() +
+				writer.println("<coordinates>" + wp.Longitude +
+					"," + wp.Latitude +
+					"," + wp.Altitude +
 					"</coordinates>");
 				writer.println("</Point>");
 				writer.println("</Placemark>");
+			}
 			}
 
 			writer.println("<Style id=\"yellowLineGreenPoly\">");
@@ -187,33 +217,46 @@ public class MainActivity extends Activity
 			// 	if (names.c)
 			// }
 
+			if (routeData.size() > 0)
+			{
 			for (String key : routeData.keySet())
 			{
 				writer.println("<Placemark><name>" + key + "</name>");
 				writer.println("<visibility>1</visibility><styleUrl>#yellowLineGreenPoly</styleUrl>");
-				writer.println("<LineString><extrude>1</extrude><tessellate>1</tessellate><altitudeMode>absolute</altitudeMode>");
+				writer.println("<LineString><extrude>1</extrude><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode>");
         		writer.println("<coordinates>");
 				
 				for (Waypoint wp : routeData.get(key))
 				{
-					writer.println(Double.toString(wp.WaypointLocation.getLongitude()) +
-						"," + wp.WaypointLocation.getLatitude() +
-						"," + wp.WaypointLocation.getAltitude());
+					writer.println(Double.toString(wp.Longitude) +
+						"," + wp.Latitude +
+						"," + wp.Altitude);
 				}
 				
 				writer.println("</coordinates>");
 				writer.println("</Placemark>");
 			}
+			}
 
 			writer.println("</Document></kml>");
 		}
 		catch (UnsupportedEncodingException e)
-		{}
+		{
+			toast("1 " + e.getMessage());
+		}
 		catch (FileNotFoundException e)
-		{}
+		{
+			toast("2 " + e.getMessage());
+		}
+		catch (Exception e)
+		{
+			toast("3 " + e.getMessage());
+		}
 		finally
 		{
 			if (writer != null) writer.close();
 		}
+		
+		toast("Save complete " + getExternalFilesDir(null) + saveFileName.getText().toString());
 	}
 }

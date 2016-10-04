@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2">
+<Document><name>KmlFile</name>
+<Placemark>
+<name>w1</name>
+<Point>
+<coordinates>-95.18682842,29.50612116,-18.0</coordinates>
+</Point>
+</Placemark>
+<Style id="yellowLineGreenPoly">
+<LineStyle>
+<color>7f00ffff</color>
+<width>4</width>
+</LineStyle>
+<PolyStyle><color>7f00ff00</color></PolyStyle>
+</Style>
+</Document></kml>
