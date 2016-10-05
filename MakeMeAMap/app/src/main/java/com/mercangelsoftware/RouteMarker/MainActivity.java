@@ -32,8 +32,13 @@ import java.io.*;
 
 public class MainActivity extends Activity 
 {
-	TextView gpsLabel;
-	TextView gpsLabel2;
+	TextView longitudeLabel;
+	TextView latitudeLabel;
+	TextView altitudeLabel;
+	TextView accuracyLabel;
+	TextView bearingLabel;
+	TextView speedLabel;
+	TextView timeLabel;
 	TextView gpsStatusLabel;
 	EditText waypointName;
 	EditText routeName;
@@ -57,8 +62,13 @@ public class MainActivity extends Activity
         setContentView(R.layout.main);
 		
 		//statusLabel = (TextView)findViewById(R.id.status_label);
-		gpsLabel = (TextView)findViewById(R.id.gps_label);
-		gpsLabel2 = (TextView)findViewById(R.id.gps_label2);
+		longitudeLabel = (TextView)findViewById(R.id.longitude_label);
+		latitudeLabel = (TextView)findViewById(R.id.latitude_label);
+		altitudeLabel = (TextView)findViewById(R.id.altitude_label);
+		bearingLabel = (TextView)findViewById(R.id.bearing_label);
+		accuracyLabel = (TextView)findViewById(R.id.accuracy_label);
+		speedLabel = (TextView)findViewById(R.id.speed_label);
+		timeLabel = (TextView)findViewById(R.id.time_label);
 		gpsStatusLabel = (TextView)findViewById(R.id.gps_status_label);
 		waypointName = (EditText)findViewById(R.id.waypoint_name);
 		routeName = (EditText)findViewById(R.id.route_name);
@@ -101,9 +111,9 @@ public class MainActivity extends Activity
 					
 					double acc = location.getAccuracy();
                     String accuracy = "";
-                    if (acc < 3.0) {
+                    if (acc <= 3.0) {
                         accuracy = "Excellent";
-                    } else if (acc < 5) {
+                    } else if (acc <= 6) {
                         accuracy = "Good";
                     } else if (acc < 10) {
                         accuracy = "Fair";
@@ -113,19 +123,20 @@ public class MainActivity extends Activity
 
                     accuracy += " (" + acc + "m)";
 					
-					final String bearinglabel = bearing;
-                    final String accuracylabel = accuracy;
+					final String bearinglbl = bearing;
+                    final String accuracylbl = accuracy;
 
-                    gpsLabel.post(new Runnable() {
+                    gpsStatusLabel.post(new Runnable() {
 							@Override
 							public void run() {
-								gpsLabel.setText("lat: " + loc.getLatitude() +
-												 " lon: " + loc.getLongitude() +
-												 " alt: " + loc.getAltitude());
+								latitudeLabel.setText("Latitude: " + loc.getLatitude());
+								longitudeLabel.setText("Longitude: " + loc.getLongitude());
+								altitudeLabel.setText("Altitude: " + loc.getAltitude() + "m");
 
-								gpsLabel2.setText("acc: " + accuracylabel +
-												  " bearing: " + bearinglabel +
-												  " speed: " + loc.getSpeed() + " m/s");
+								accuracyLabel.setText("Accuracy: " + accuracylbl);
+								bearingLabel.setText("Bearing: " + bearinglbl);
+								speedLabel.setText("Speed: " + loc.getSpeed() + " m/s");
+								timeLabel.setText("Time: " + loc.getTime());
 							}
 						});
 					
@@ -169,7 +180,7 @@ public class MainActivity extends Activity
 					
 					gpsStatusLabel.setText("GPS Status: " + statustext);
 					
-					Toast.makeText(getApplicationContext(), provider + ":" + statustext, Toast.LENGTH_LONG).show();
+					//Toast.makeText(getApplicationContext(), provider + ":" + statustext, Toast.LENGTH_LONG).show();
 				}
 
 				@Override
@@ -228,22 +239,22 @@ public class MainActivity extends Activity
 			
 			writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 			writer.println("<kml xmlns=\"http://www.opengis.net/kml/2.2\">");
-			writer.println("<Document><name>KmlFile</name>");
+			writer.println("<Document><name>Route Marker</name>");
 			
 			if (waypoints.size() > 0)
 			{
-			for (Waypoint wp : waypoints)
-			{
-				writer.println("<Placemark>");
-				writer.println("<name>" + wp.Name + "</name>");
-				writer.println("<Point>");
-				writer.println("<coordinates>" + wp.Longitude +
-					"," + wp.Latitude +
-					"," + wp.Altitude +
-					"</coordinates>");
-				writer.println("</Point>");
-				writer.println("</Placemark>");
-			}
+				for (Waypoint wp : waypoints)
+				{
+					writer.println("<Placemark>");
+					writer.println("<name>" + wp.Name + "</name>");
+					writer.println("<Point>");
+					writer.println("<coordinates>" + wp.Longitude +
+						"," + wp.Latitude +
+						"," + wp.Altitude +
+						"</coordinates>");
+					writer.println("</Point>");
+					writer.println("</Placemark>");
+				}
 			}
 
 			writer.println("<Style id=\"yellowLineGreenPoly\">");
@@ -253,13 +264,6 @@ public class MainActivity extends Activity
 			writer.println("</LineStyle>");
 			writer.println("<PolyStyle><color>7f00ff00</color></PolyStyle>");
 			writer.println("</Style>");
-
-			// ArrayList<String> names = new ArrayList<String();
-
-			// for (Waypoint wp : routeData)
-			// {
-			// 	if (names.c)
-			// }
 
 			if (routeData.size() > 0)
 			{
@@ -302,5 +306,10 @@ public class MainActivity extends Activity
 		}
 		
 		toast("Save complete " + getExternalFilesDir(null) + saveFileName.getText().toString());
+	}
+	
+	public void aboutButtonClick(View view)
+	{
+		toast("Created by Nick Gable (Mercangel Software)");
 	}
 }

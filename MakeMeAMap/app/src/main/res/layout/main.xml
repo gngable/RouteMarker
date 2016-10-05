@@ -5,19 +5,60 @@
 	android:orientation="vertical"
 	>
 	
+	<LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+		android:layout_weight="1"
+        android:orientation="vertical">
+	
 	<TextView
-		android:id="@+id/gps_label"
+		android:id="@+id/longitude_label"
         android:text="initializing..."
 		android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 	
 	<TextView
-		android:id="@+id/gps_label2"
+		android:id="@+id/latitude_label"
         android:text="initializing..."
 		android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+	
+		<TextView
+			android:id="@+id/altitude_label"
+			android:text="initializing..."
+			android:textSize="20sp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+		
+		<TextView
+			android:id="@+id/accuracy_label"
+			android:text="initializing..."
+			android:textSize="20sp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+		
+		<TextView
+			android:id="@+id/bearing_label"
+			android:text="initializing..."
+			android:textSize="20sp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+		
+		<TextView
+			android:id="@+id/speed_label"
+			android:text="initializing..."
+			android:textSize="20sp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
+		
+		<TextView
+			android:id="@+id/time_label"
+			android:text="initializing..."
+			android:textSize="20sp"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content" />
 	
 	<TextView
 		android:id="@+id/gps_status_label"
@@ -25,6 +66,8 @@
 		android:textSize="20sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
+	
+	</LinearLayout>
 	
 	<View
         android:layout_width="match_parent"
@@ -156,5 +199,22 @@
             android:text="Save"/>
 		
 	</LinearLayout>
+	
+	<View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp"
+        android:background="@android:color/darker_gray"/>
+	
+	<Button
+		android:id="@+id/about_button"
+		android:layout_width="wrap_content"
+		android:layout_height="wrap_content"
+		android:layout_gravity="bottom"
+		android:onClick="aboutButtonClick"
+		android:textSize="10sp"
+		android:background="?android:colorBackground"
+		android:text="About"/>
 
 </LinearLayout>
