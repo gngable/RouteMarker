@@ -241,23 +241,23 @@ public class MainActivity extends Activity
 
 			if (routeData.size() > 0)
 			{
-			for (String key : routeData.keySet())
-			{
-				writer.println("<Placemark><name>" + key + "</name>");
-				writer.println("<visibility>1</visibility><styleUrl>#yellowLineGreenPoly</styleUrl>");
-				writer.println("<LineString><extrude>1</extrude><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode>");
-        		writer.println("<coordinates>");
-				
-				for (Waypoint wp : routeData.get(key))
+				for (String key : routeData.keySet())
 				{
-					writer.println(Double.toString(wp.Longitude) +
-						"," + wp.Latitude +
-						"," + wp.Altitude);
-				}
+					writer.println("<Placemark><name>" + key + "</name><description>" + key + "</description>");
+					writer.println("<visibility>1</visibility><styleUrl>#yellowLineGreenPoly</styleUrl>");
+					writer.println("<LineString><extrude>1</extrude><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode>");
+        			writer.println("<coordinates>");
 				
-				writer.println("</coordinates></LineString>");
-				writer.println("</Placemark>");
-			}
+					for (Waypoint wp : routeData.get(key))
+					{
+						writer.println(Double.toString(wp.Longitude) +
+							"," + wp.Latitude +
+							"," + wp.Altitude);
+					}
+				
+					writer.println("</coordinates></LineString>");
+					writer.println("</Placemark>");
+				}
 			}
 
 			writer.println("</Document></kml>");
