@@ -1,2 +1,2 @@
 # RouteMarker
-test app for gps
+Simple GPS app that records named routes and waypoints. Outputs a kml file that can opened in google earth.
