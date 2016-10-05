@@ -1,4 +1,4 @@
-package MercangelSoftware.MakeMeAMap;
+package com.mercangelsoftware.RouteMarker;
 import android.location.*;
 
 public class Waypoint
