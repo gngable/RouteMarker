@@ -23,7 +23,6 @@ public class MainActivity extends Activity
 	ArrayList<Waypoint> waypoints = new ArrayList<Waypoint>();
 	
 	HashMap<String, ArrayList<Waypoint>> routeData = new HashMap<String, ArrayList<Waypoint>>();
-	//ArrayList<Waypoint> routeData = new ArrayList<Waypoint>();
 	
 	String currentRouteName = "";
 	boolean recordingRoute = false;
@@ -55,35 +54,58 @@ public class MainActivity extends Activity
 					lastLocation = location;
 					
 					String bearing = "";
-					float bear = loc.getBearing();
-					float fourtyfivehalf = 45/2;
+                    float bear = loc.getBearing();
+                    float fourtyfivehalf = 45 / 2;
+
+                    if (bear <= fourtyfivehalf && bear > -fourtyfivehalf) {
+                        bearing = "N";
+                    } else if (bear <= 45 + fourtyfivehalf && bear > 45 - fourtyfivehalf) {
+                        bearing = "NE";
+                    } else if (bear <= 90 + fourtyfivehalf && bear > 90 - fourtyfivehalf) {
+                        bearing = "E";
+                    } else if (bear <= 135 + fourtyfivehalf && bear > 135 - fourtyfivehalf) {
+                        bearing = "SE";
+                    } else if (bear <= 180 + fourtyfivehalf && bear > 180 - fourtyfivehalf) {
+                        bearing = "S";
+                    } else if (bear <= 225 + fourtyfivehalf && bear > 225 - fourtyfivehalf) {
+                        bearing = "SW";
+                    } else if (bear <= 270 + fourtyfivehalf && bear > 270 - fourtyfivehalf) {
+                        bearing = "W";
+                    } else if (bear <= 315 + fourtyfivehalf && bear > 315 - fourtyfivehalf) {
+                        bearing = "NW";
+                    }
+
+                    bearing += " (" + bear + ")";
 					
-					if (bear <= fourtyfivehalf && bear > -fourtyfivehalf)
-					{
-						bearing = "North";
-					}
-					else if (bear <= 45 + fourtyfivehalf && bear > 45 - fourtyfivehalf)
-					{
-						bearing = "Northeast";
-					}
-					else if (bear <= 90 + fourtyfivehalf && bear > 90 - fourtyfivehalf)
-					{
-						bearing = "East";
-					}
+					double acc = location.getAccuracy();
+                    String accuracy = "";
+                    if (acc < 3.0) {
+                        accuracy = "Excellent";
+                    } else if (acc < 5) {
+                        accuracy = "Good";
+                    } else if (acc < 10) {
+                        accuracy = "Fair";
+                    } else {
+                        accuracy = "Poor";
+                    }
+
+                    accuracy += " (" + acc + "m)";
 					
-					gpsLabel.post(new Runnable(){
+					final String bearinglabel = bearing;
+                    final String accuracylabel = accuracy;
+
+                    gpsLabel.post(new Runnable() {
 							@Override
-							public void run()
-							{
+							public void run() {
 								gpsLabel.setText("lat: " + loc.getLatitude() +
-								" lon: " + loc.getLongitude() +
-								" alt: " + loc.getAltitude());
-								
-								gpsLabel2.setText("acc: " + loc.getAccuracy() +
-									" bearing: " + loc.getBearing() +
-									" speed: " + loc.getSpeed());
+												 " lon: " + loc.getLongitude() +
+												 " alt: " + loc.getAltitude());
+
+								gpsLabel2.setText("acc: " + accuracylabel +
+												  " bearing: " + bearinglabel +
+												  " speed: " + loc.getSpeed() + " m/s");
 							}
-					});
+						});
 					
 					if (recordingRoute)
 					{
