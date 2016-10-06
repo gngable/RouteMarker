@@ -125,6 +125,7 @@ public class MainActivity extends Activity
 					
 					final String bearinglbl = bearing;
                     final String accuracylbl = accuracy;
+					final Date date = new Date(loc.getTime());
 
                     gpsStatusLabel.post(new Runnable() {
 							@Override
@@ -136,7 +137,7 @@ public class MainActivity extends Activity
 								accuracyLabel.setText("Accuracy: " + accuracylbl);
 								bearingLabel.setText("Bearing: " + bearinglbl);
 								speedLabel.setText("Speed: " + loc.getSpeed() + " m/s");
-								timeLabel.setText("Time: " + loc.getTime());
+								timeLabel.setText("Date: " + date.toLocaleString());
 							}
 						});
 					
@@ -204,7 +205,7 @@ public class MainActivity extends Activity
 		Waypoint waypoint = new Waypoint(waypointName.getText().toString(), lastLocation);
 		waypoints.add(waypoint);
 		
-		Toast.makeText(getApplicationContext(), "Waypoint " + waypointName.getText() + " saved", Toast.LENGTH_LONG).show();
+		Toast.makeText(getApplicationContext(), "Marker " + waypointName.getText() + " set", Toast.LENGTH_LONG).show();
 	}
 	
 	public void routeStartButtonClick(View view)

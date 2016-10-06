@@ -71,14 +71,14 @@
 	
 	<View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:layout_marginTop="3dp"
         android:layout_marginBottom="3dp"
         android:background="@android:color/darker_gray"/>
 	
 	<TextView
 		android:textSize="20sp"
-        android:text="Waypoint"
+        android:text="Marker"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 	
@@ -105,13 +105,13 @@
             android:onClick="waypointButtonClick"
             android:textSize="20sp"
 			android:background="?android:colorBackground"
-            android:text="Save"/>
+            android:text="Set"/>
 		
 	</LinearLayout>
 	
 	<View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:layout_marginTop="3dp"
         android:layout_marginBottom="3dp"
         android:background="@android:color/darker_gray"/>
@@ -167,7 +167,7 @@
 	
 	<View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:layout_marginTop="3dp"
         android:layout_marginBottom="3dp"
         android:background="@android:color/darker_gray"/>
@@ -202,7 +202,7 @@
 	
 	<View
         android:layout_width="match_parent"
-        android:layout_height="1dp"
+        android:layout_height="2dp"
         android:layout_marginTop="3dp"
         android:layout_marginBottom="3dp"
         android:background="@android:color/darker_gray"/>
