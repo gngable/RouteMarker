@@ -43,6 +43,7 @@ public class MainActivity extends Activity
 	EditText waypointName;
 	EditText routeName;
 	EditText saveFileName;
+	Button routeStartButton;
 	
 	Location lastLocation;
 	int lastStatus = -1;
@@ -73,6 +74,7 @@ public class MainActivity extends Activity
 		waypointName = (EditText)findViewById(R.id.waypoint_name);
 		routeName = (EditText)findViewById(R.id.route_name);
 		saveFileName = (EditText)findViewById(R.id.save_file_name);
+		routeStartButton = (Button)findViewById(R.id.route_start_button);
 		
 		LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
 		
@@ -205,49 +207,89 @@ public class MainActivity extends Activity
 		Waypoint waypoint = new Waypoint(waypointName.getText().toString(), lastLocation);
 		waypoints.add(waypoint);
 		
-		Toast.makeText(getApplicationContext(), "Marker " + waypointName.getText() + " set", Toast.LENGTH_LONG).show();
+		ArrayList<Waypoint> wpl = new ArrayList();
+		
+		wpl.add(waypoint);
+		
+		SaveKML(wpl, null, waypointName.getText().toString());
 	}
 	
 	public void routeStartButtonClick(View view)
 	{
-		currentRouteName = routeName.getText().toString();
-		recordingRoute = true;
+		if (routeStartButton.getText() != "Pause")
+		{
+			currentRouteName = routeName.getText().toString();
+			recordingRoute = true;
 		
-		Toast.makeText(getApplicationContext(), "Route " + currentRouteName + " started", Toast.LENGTH_LONG).show();
+			routeStartButton.setText("Pause");
+		
+			Toast.makeText(getApplicationContext(), "Route " + currentRouteName + " started", Toast.LENGTH_LONG).show();
+		}
+		else
+		{
+			recordingRoute = false;
+			routeStartButton.setText("Resume");
+		}
 	}
 	
 	public void routeStopButtonClick(View view)
 	{
 		recordingRoute = false;
 		
-		toast("Route " + currentRouteName + " stopped");
+		routeStartButton.setText("Start");
+		
+		HashMap<String, ArrayList<Waypoint>> rds = new HashMap<String, ArrayList<Waypoint>>();
+		
+		rds.put(currentRouteName, routeData.get(currentRouteName));
+		
+		SaveKML(null, rds, currentRouteName);
 	}
 	
-	private void toast(String message)
+	private void toast(String message, boolean longtoast)
 	{
-		Toast.makeText(getApplicationContext(), message, Toast.LENGTH_LONG).show();
+		Toast.makeText(getApplicationContext(), message, (longtoast?Toast.LENGTH_LONG:Toast.LENGTH_SHORT)).show();
 	}
 	
 	public void saveButtonClick(View view)
 	{
-		toast("Saving " + saveFileName.getText().toString());
+		SaveKML(waypoints, routeData, saveFileName.getText().toString());
+		waypoints.clear();
+		routeData.clear();
+	}
+	
+	public void SaveKML(ArrayList<Waypoint> wps, HashMap<String, ArrayList<Waypoint>> rds, String name)
+	{
+		toast("Saving " + name, false);
 		PrintWriter writer = null;
+		
+		String filename = name.replaceAll(" ", "_") + ".kml";
+		
+		String date = new Date().toLocaleString().replaceAll("/", "-").replaceAll(",", "")
+		.replaceAll(" ", "_").replaceAll(":", ".");
 		
 		try
 		{
-			File f = new File(getExternalFilesDir(null), saveFileName.getText().toString());
+			File dir = new File(getExternalFilesDir(null) + "/" + date);
+			
+			if (!dir.exists())
+			{
+				dir.mkdir();
+			}
+			
+			File f = new File(getExternalFilesDir(null) + "/" + date, filename);
 			writer = new PrintWriter(f, "UTF-8");
 			
 			writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 			writer.println("<kml xmlns=\"http://www.opengis.net/kml/2.2\">");
-			writer.println("<Document><name>Route Marker</name>");
+			writer.println("<Document><name>" + name + "</name>");
 			
-			if (waypoints.size() > 0)
+			if (wps != null && wps.size() > 0)
 			{
-				for (Waypoint wp : waypoints)
+				for (Waypoint wp : wps)
 				{
 					writer.println("<Placemark>");
 					writer.println("<name>" + wp.Name + "</name>");
+					writer.println("<description>" + date + " " + wp.Name + "</description>");
 					writer.println("<Point>");
 					writer.println("<coordinates>" + wp.Longitude +
 						"," + wp.Latitude +
@@ -266,16 +308,16 @@ public class MainActivity extends Activity
 			writer.println("<PolyStyle><color>7f00ff00</color></PolyStyle>");
 			writer.println("</Style>");
 
-			if (routeData.size() > 0)
+			if (rds != null && rds.size() > 0)
 			{
-				for (String key : routeData.keySet())
+				for (String key : rds.keySet())
 				{
-					writer.println("<Placemark><name>" + key + "</name><description>" + key + "</description>");
+					writer.println("<Placemark><name>" + key + "</name><description>" + date + " " + key + "</description>");
 					writer.println("<visibility>1</visibility><styleUrl>#yellowLineGreenPoly</styleUrl>");
 					writer.println("<LineString><extrude>1</extrude><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode>");
         			writer.println("<coordinates>");
 				
-					for (Waypoint wp : routeData.get(key))
+					for (Waypoint wp : rds.get(key))
 					{
 						writer.println(Double.toString(wp.Longitude) +
 							"," + wp.Latitude +
@@ -291,26 +333,29 @@ public class MainActivity extends Activity
 		}
 		catch (UnsupportedEncodingException e)
 		{
-			toast("1 " + e.getMessage());
+			toast("1 " + e.getMessage(), true);
+			return;
 		}
 		catch (FileNotFoundException e)
 		{
-			toast("2 " + e.getMessage());
+			toast("2 " + e.getMessage(), true);
+			return;
 		}
 		catch (Exception e)
 		{
-			toast("3 " + e.getMessage());
+			toast("3 " + e.getMessage(), true);
+			return;
 		}
 		finally
 		{
 			if (writer != null) writer.close();
 		}
 		
-		toast("Save complete " + getExternalFilesDir(null) + saveFileName.getText().toString());
+		toast("Save complete " + getExternalFilesDir(null) + "/" + date + "/" + filename, true);
 	}
 	
 	public void aboutButtonClick(View view)
 	{
-		toast("Created by Nick Gable (Mercangel Software)");
+		toast("Created by Nick Gable (Mercangel Software)", true);
 	}
 }

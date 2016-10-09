@@ -105,7 +105,7 @@
             android:onClick="waypointButtonClick"
             android:textSize="20sp"
 			android:background="?android:colorBackground"
-            android:text="Set"/>
+            android:text="Save"/>
 		
 	</LinearLayout>
 	
@@ -161,7 +161,7 @@
             android:onClick="routeStopButtonClick"
             android:textSize="20sp"
 			android:background="?android:colorBackground"
-            android:text="Stop"/>
+            android:text="Stop/Save"/>
 		
 	</LinearLayout>
 	
