@@ -269,14 +269,14 @@ public class MainActivity extends Activity
 		
 		try
 		{
-			File dir = new File(getExternalFilesDir(null) + "/" + date);
+			//File dir = new File(getExternalFilesDir(null) + "/" + date);
 			
-			if (!dir.exists())
-			{
-				dir.mkdir();
-			}
+			//if (!dir.exists())
+			//{
+				//dir.mkdir();
+			//}
 			
-			File f = new File(getExternalFilesDir(null) + "/" + date, filename);
+			File f = new File(getExternalFilesDir(null) + "/" + date + "_" + filename);
 			writer = new PrintWriter(f, "UTF-8");
 			
 			writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -351,7 +351,7 @@ public class MainActivity extends Activity
 			if (writer != null) writer.close();
 		}
 		
-		toast("Save complete " + getExternalFilesDir(null) + "/" + date + "/" + filename, true);
+		toast("Save complete " + getExternalFilesDir(null) + "/" + date + "_" + filename, true);
 	}
 	
 	public void aboutButtonClick(View view)
