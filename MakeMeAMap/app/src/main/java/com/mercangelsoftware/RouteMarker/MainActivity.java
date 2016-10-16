@@ -147,7 +147,7 @@ public class MainActivity extends Activity
 							routeData.get(currentRouteName).add(new Waypoint(currentRouteName, loc));
 							
 							if (lastRouteLocation != null)
-								routeLength += (lastRouteLocation.distanceTo(loc) * 3.28084);
+								routeLength += (lastRouteLocation.distanceTo(loc));
 
 							lastRouteLocation = loc;
 						}
@@ -167,7 +167,7 @@ public class MainActivity extends Activity
 								
 								if (recordingRoute)
 								{
-									distanceLabel.setText(currentRouteName + " length " + String.format("%.2f", routeLength) + "ft");
+									distanceLabel.setText(currentRouteName + " length: " + String.format("%.2f", routeLength * 3.28084) + "ft/" + String.format("%.2f", routeLength * 0.000621371) + "miles");
 								}
 							}
 						});
