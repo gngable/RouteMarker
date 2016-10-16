@@ -23,12 +23,14 @@
 package com.mercangelsoftware.RouteMarker;
 
 import android.app.*;
-import android.os.*;
+import android.content.*;
 import android.location.*;
-import android.widget.*;
+import android.os.*;
 import android.view.*;
-import java.util.*;
+import android.view.inputmethod.*;
+import android.widget.*;
 import java.io.*;
+import java.util.*;
 
 public class MainActivity extends Activity 
 {
