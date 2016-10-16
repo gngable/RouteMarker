@@ -145,19 +145,20 @@ public class MainActivity extends Activity
 
 							routeData.get(currentRouteName).add(new Waypoint(currentRouteName, loc));
 							
-							Waypoint lwp = null;
+							routeLength += (lastRouteLocation.distanceTo(loc) * 3.28084);
+							// Waypoint lwp = null;
 							
-							for (Waypoint wp : routeData.get(currentRouteName))
-							{
-								if (lwp != null)
-								{
-									float[] results = new float[3];
-									Location.distanceBetween(lwp.Latitude, lwp.Longitude, wp.Latitude, wp.Longitude, results);
-									routeLength += results[0] * 3.28084;
-								}
+							// for (Waypoint wp : routeData.get(currentRouteName))
+							// {
+							// 	if (lwp != null)
+							// 	{
+							// 		float[] results = new float[3];
+							// 		Location.distanceBetween(lwp.Latitude, lwp.Longitude, wp.Latitude, wp.Longitude, results);
+							// 		routeLength += (results[0] * 3.28084);
+							// 	}
 								
-								lwp = wp;
-							}
+							// 	lwp = wp;
+							// }
 						}
 					}
 					
