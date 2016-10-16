@@ -136,8 +136,6 @@ public class MainActivity extends Activity
 					{
 						if (lastRouteLocation == null || lastRouteLocation.distanceTo(loc) > 1.0)
 						{
-							lastRouteLocation = loc;
-							
 							if (!routeData.containsKey(currentRouteName))
 							{
 								routeData.put(currentRouteName, new ArrayList<Waypoint>());
@@ -145,20 +143,10 @@ public class MainActivity extends Activity
 
 							routeData.get(currentRouteName).add(new Waypoint(currentRouteName, loc));
 							
-							routeLength += (lastRouteLocation.distanceTo(loc) * 3.28084);
-							// Waypoint lwp = null;
-							
-							// for (Waypoint wp : routeData.get(currentRouteName))
-							// {
-							// 	if (lwp != null)
-							// 	{
-							// 		float[] results = new float[3];
-							// 		Location.distanceBetween(lwp.Latitude, lwp.Longitude, wp.Latitude, wp.Longitude, results);
-							// 		routeLength += (results[0] * 3.28084);
-							// 	}
-								
-							// 	lwp = wp;
-							// }
+							if (lastRouteLocation != null)
+								routeLength += (lastRouteLocation.distanceTo(loc) * 3.28084);
+
+							lastRouteLocation = loc;
 						}
 					}
 					
