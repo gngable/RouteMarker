@@ -126,7 +126,7 @@ public class MainActivity extends Activity
                         accuracy = "Poor";
                     }
 
-                    accuracy += " (" + acc + "m)";
+                    accuracy += " (" + String.format("%.2f", acc * 3.28084) + "ft)";
 					
 					final String bearinglbl = bearing;
                     final String accuracylbl = accuracy;
@@ -153,7 +153,7 @@ public class MainActivity extends Activity
 								{
 									float[] results = new float[3];
 									Location.distanceBetween(lwp.Latitude, lwp.Longitude, wp.Latitude, wp.Longitude, results);
-									routeLength += results[0];
+									routeLength += results[0] * 3.28084;
 								}
 								
 								lwp = wp;
@@ -166,16 +166,16 @@ public class MainActivity extends Activity
 							public void run() {
 								latitudeLabel.setText("Latitude: " + loc.getLatitude());
 								longitudeLabel.setText("Longitude: " + loc.getLongitude());
-								altitudeLabel.setText("Altitude: " + loc.getAltitude() + "m");
+								altitudeLabel.setText("Altitude: " + String.format("%.2f", loc.getAltitude() * 3.28084) + "ft");
 
 								accuracyLabel.setText("Accuracy: " + accuracylbl);
 								bearingLabel.setText("Bearing: " + bearinglbl);
-								speedLabel.setText("Speed: " + loc.getSpeed() + " m/s");
+								speedLabel.setText("Speed: " + String.format("%.2f", loc.getSpeed() * 2.23694) + " mph");
 								timeLabel.setText("Date: " + date.toLocaleString());
 								
 								if (recordingRoute)
 								{
-									distanceLabel.setText(currentRouteName + " length " + routeLength);
+									distanceLabel.setText(currentRouteName + " length " + String.format("%.2f", routeLength) + "ft");
 								}
 							}
 						});
