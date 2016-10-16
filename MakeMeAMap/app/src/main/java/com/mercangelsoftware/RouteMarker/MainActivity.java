@@ -163,7 +163,7 @@ public class MainActivity extends Activity
 								accuracyLabel.setText("Accuracy: " + accuracylbl);
 								bearingLabel.setText("Bearing: " + bearinglbl);
 								speedLabel.setText("Speed: " + String.format("%.2f", loc.getSpeed() * 2.23694) + " mph");
-								timeLabel.setText("Date: " + date.toLocaleString());
+								timeLabel.setText("GPS Date: " + date.toLocaleString());
 								
 								if (recordingRoute)
 								{
