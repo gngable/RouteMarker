@@ -76,7 +76,8 @@ public class MainActivity extends Activity
 		distanceLabel = (TextView)findViewById(R.id.distance_label);
 		waypointName = (EditText)findViewById(R.id.waypoint_name);
 		routeName = (EditText)findViewById(R.id.route_name);
-		saveFileName = (EditText)findViewById(R.id.save_file_name);
+		saveFileName
+ = (EditText)findViewById(R.id.save_file_name);
 		routeStartButton = (Button)findViewById(R.id.route_start_button);
 		
 		LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
@@ -223,6 +224,10 @@ public class MainActivity extends Activity
 		wpl.add(waypoint);
 		
 		SaveKML(wpl, null, waypointName.getText().toString());
+
+		waypointName.clearFocus();
+		routeName.clearFocus();
+		saveFileName.clearFocus();
 	}
 	
 	public void routeStartButtonClick(View view)
@@ -242,6 +247,10 @@ public class MainActivity extends Activity
 			recordingRoute = false;
 			routeStartButton.setText("Resume");
 		}
+
+		waypointName.clearFocus();
+		routeName.clearFocus();
+		saveFileName.clearFocus();
 	}
 	
 	public void routeStopButtonClick(View view)
@@ -255,6 +264,10 @@ public class MainActivity extends Activity
 		rds.put(currentRouteName, routeData.get(currentRouteName));
 		
 		SaveKML(null, rds, currentRouteName);
+
+		waypointName.clearFocus();
+		routeName.clearFocus();
+		saveFileName.clearFocus();
 	}
 	
 	private void toast(String message, boolean longtoast)
@@ -267,6 +280,10 @@ public class MainActivity extends Activity
 		SaveKML(waypoints, routeData, saveFileName.getText().toString());
 		waypoints.clear();
 		routeData.clear();
+
+		waypointName.clearFocus();
+		routeName.clearFocus();
+		saveFileName.clearFocus();
 	}
 	
 	public void SaveKML(ArrayList<Waypoint> wps, HashMap<String, ArrayList<Waypoint>> rds, String name)
