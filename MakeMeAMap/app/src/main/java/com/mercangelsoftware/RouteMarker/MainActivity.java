@@ -40,6 +40,7 @@ public class MainActivity extends Activity
 	TextView speedLabel;
 	TextView timeLabel;
 	TextView gpsStatusLabel;
+	TextView distanceLabel;
 	EditText waypointName;
 	EditText routeName;
 	EditText saveFileName;
@@ -55,6 +56,7 @@ public class MainActivity extends Activity
 	String currentRouteName = "";
 	boolean recordingRoute = false;
 	Location lastRouteLocation;
+	double routeLength = 0.0;
 	
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -71,6 +73,7 @@ public class MainActivity extends Activity
 		speedLabel = (TextView)findViewById(R.id.speed_label);
 		timeLabel = (TextView)findViewById(R.id.time_label);
 		gpsStatusLabel = (TextView)findViewById(R.id.gps_status_label);
+		distanceLabel = (TextView)findViewById(R.id.distance_label);
 		waypointName = (EditText)findViewById(R.id.waypoint_name);
 		routeName = (EditText)findViewById(R.id.route_name);
 		saveFileName = (EditText)findViewById(R.id.save_file_name);
@@ -128,20 +131,6 @@ public class MainActivity extends Activity
 					final String bearinglbl = bearing;
                     final String accuracylbl = accuracy;
 					final Date date = new Date(loc.getTime());
-
-                    gpsStatusLabel.post(new Runnable() {
-							@Override
-							public void run() {
-								latitudeLabel.setText("Latitude: " + loc.getLatitude());
-								longitudeLabel.setText("Longitude: " + loc.getLongitude());
-								altitudeLabel.setText("Altitude: " + loc.getAltitude() + "m");
-
-								accuracyLabel.setText("Accuracy: " + accuracylbl);
-								bearingLabel.setText("Bearing: " + bearinglbl);
-								speedLabel.setText("Speed: " + loc.getSpeed() + " m/s");
-								timeLabel.setText("Date: " + date.toLocaleString());
-							}
-						});
 					
 					if (recordingRoute)
 					{
@@ -155,8 +144,41 @@ public class MainActivity extends Activity
 							}
 
 							routeData.get(currentRouteName).add(new Waypoint(currentRouteName, loc));
+							
+							Waypoint lwp = null;
+							
+							for (Waypoint wp : routeData.get(currentRouteName))
+							{
+								if (lwp != null)
+								{
+									float[] results = new float[3];
+									Location.distanceBetween(lwp.Latitude, lwp.Longitude, wp.Latitude, wp.Longitude, results);
+									routeLength += results[0];
+								}
+								
+								lwp = wp;
+							}
 						}
 					}
+					
+					gpsStatusLabel.post(new Runnable() {
+							@Override
+							public void run() {
+								latitudeLabel.setText("Latitude: " + loc.getLatitude());
+								longitudeLabel.setText("Longitude: " + loc.getLongitude());
+								altitudeLabel.setText("Altitude: " + loc.getAltitude() + "m");
+
+								accuracyLabel.setText("Accuracy: " + accuracylbl);
+								bearingLabel.setText("Bearing: " + bearinglbl);
+								speedLabel.setText("Speed: " + loc.getSpeed() + " m/s");
+								timeLabel.setText("Date: " + date.toLocaleString());
+								
+								if (recordingRoute)
+								{
+									distanceLabel.setText(currentRouteName + " length " + routeLength);
+								}
+							}
+						});
 				}
 
 				@Override
@@ -218,6 +240,7 @@ public class MainActivity extends Activity
 	{
 		if (routeStartButton.getText() != "Pause")
 		{
+			routeLength = 0.0;
 			currentRouteName = routeName.getText().toString();
 			recordingRoute = true;
 		
