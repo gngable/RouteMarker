@@ -31,6 +31,7 @@ import android.view.inputmethod.*;
 import android.widget.*;
 import java.io.*;
 import java.util.*;
+import android.hardware.*;
 
 public class MainActivity extends Activity 
 {
@@ -47,6 +48,8 @@ public class MainActivity extends Activity
 	EditText routeName;
 	EditText saveFileName;
 	Button routeStartButton;
+	
+	//private SensorManager sensorManager;
 	
 	Location lastLocation;
 	int lastStatus = -1;
@@ -78,8 +81,7 @@ public class MainActivity extends Activity
 		distanceLabel = (TextView)findViewById(R.id.distance_label);
 		waypointName = (EditText)findViewById(R.id.waypoint_name);
 		routeName = (EditText)findViewById(R.id.route_name);
-		saveFileName
- = (EditText)findViewById(R.id.save_file_name);
+		saveFileName = (EditText)findViewById(R.id.save_file_name);
 		routeStartButton = (Button)findViewById(R.id.route_start_button);
 		
 		LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
@@ -131,7 +133,7 @@ public class MainActivity extends Activity
 
                     accuracy += " (" + String.format("%.2f", acc * 3.28084) + "ft)";
 					
-					final String bearinglbl = bearing;
+					//final String bearinglbl = bearing;
                     final String accuracylbl = accuracy;
 					final Date date = new Date(loc.getTime());
 					
@@ -161,7 +163,7 @@ public class MainActivity extends Activity
 								altitudeLabel.setText("Altitude: " + String.format("%.2f", loc.getAltitude() * 3.28084) + "ft");
 
 								accuracyLabel.setText("Accuracy: " + accuracylbl);
-								bearingLabel.setText("Bearing: " + bearinglbl);
+								//bearingLabel.setText("Bearing: " + bearinglbl);
 								speedLabel.setText("Speed: " + String.format("%.2f", loc.getSpeed() * 2.23694) + " mph");
 								timeLabel.setText("GPS Date: " + date.toLocaleString());
 								
@@ -211,9 +213,93 @@ public class MainActivity extends Activity
 				{
 					// TODO: Implement this method
 				}
+		});
+		
+		final SensorManager sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+		
+		SensorEventListener sensorListener = new SensorEventListener(){
+
+			private final float[] mAccelerometerReading = new float[3];
+			private final float[] mMagnetometerReading = new float[3];
+
+			private final float[] mRotationMatrix = new float[9];
+			private final float[] mOrientationAngles = new float[3];
+			
+			@Override
+			public void onSensorChanged(SensorEvent event)
+			{
+				if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+					System.arraycopy(event.values, 0, mAccelerometerReading,
+									 0, mAccelerometerReading.length);
+				}
+				else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+					System.arraycopy(event.values, 0, mMagnetometerReading,
+									 0, mMagnetometerReading.length);
+									 
+									// toast("M", true);
+				}
+				
+				sensorManager.getRotationMatrix(mRotationMatrix, null,
+												 mAccelerometerReading, mMagnetometerReading);
+
+				// "mRotationMatrix" now has up-to-date information.
+
+				sensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
+				
+				String bearing = "";
+				float bear = mOrientationAngles[1];
+				float fourtyfivehalf = 45 / 2;
+
+				if (bear <= fourtyfivehalf && bear > -fourtyfivehalf) {
+					bearing = "N";
+				} else if (bear <= 45 + fourtyfivehalf && bear > 45 - fourtyfivehalf) {
+					bearing = "NE";
+				} else if (bear <= 90 + fourtyfivehalf && bear > 90 - fourtyfivehalf) {
+					bearing = "E";
+				} else if (bear <= 135 + fourtyfivehalf && bear > 135 - fourtyfivehalf) {
+					bearing = "SE";
+				} else if (bear <= 180 + fourtyfivehalf && bear > 180 - fourtyfivehalf) {
+					bearing = "S";
+				} else if (bear <= 225 + fourtyfivehalf && bear > 225 - fourtyfivehalf) {
+					bearing = "SW";
+				} else if (bear <= 270 + fourtyfivehalf && bear > 270 - fourtyfivehalf) {
+					bearing = "W";
+				} else if (bear <= 315 + fourtyfivehalf && bear > 315 - fourtyfivehalf) {
+					bearing = "NW";
+				}
+
+				bearing += " (" + bear + ")";
+				
+				final String bearinglbl = bearing;
+				
+				gpsStatusLabel.post(new Runnable() {
+						@Override
+						public void run() {
+							
+							bearingLabel.setText("Bearing: " + bearinglbl);
+							
+						}
+					});
+			}
+
+			@Override
+			public void onAccuracyChanged(Sensor p1, int p2)
+			{
+				// TODO: Implement this method
+			}
 
 			
-		});
+		};
+		
+		
+		
+		sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
+		//sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
+		//sensorManager.registerListener(sensorListener, Sensor.TYPE_MAGNETIC_FIELD,
+			//							SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
+	
+		
+		//sensorManager.r
     }
 	
 	public void waypointButtonClick(View view)
