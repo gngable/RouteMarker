@@ -32,6 +32,7 @@ import android.widget.*;
 import java.io.*;
 import java.util.*;
 import android.hardware.*;
+import java.util.concurrent.*;
 
 public class MainActivity extends Activity 
 {
@@ -44,9 +45,11 @@ public class MainActivity extends Activity
 	TextView timeLabel;
 	TextView gpsStatusLabel;
 	TextView distanceLabel;
-	EditText waypointName;
-	EditText routeName;
-	EditText saveFileName;
+	TextView routeTimeLabel;
+	TextView avgSpeedLabel;
+	//EditText waypointName;
+	//EditText routeName;
+	//EditText saveFileName;
 	Button routeStartButton;
 	
 	//private SensorManager sensorManager;
@@ -62,6 +65,8 @@ public class MainActivity extends Activity
 	boolean recordingRoute = false;
 	Location lastRouteLocation;
 	double routeLength = 0.0;
+	long startTime;
+	
 	
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -79,9 +84,13 @@ public class MainActivity extends Activity
 		timeLabel = (TextView)findViewById(R.id.time_label);
 		gpsStatusLabel = (TextView)findViewById(R.id.gps_status_label);
 		distanceLabel = (TextView)findViewById(R.id.distance_label);
-		waypointName = (EditText)findViewById(R.id.waypoint_name);
-		routeName = (EditText)findViewById(R.id.route_name);
-		saveFileName = (EditText)findViewById(R.id.save_file_name);
+		routeTimeLabel = (TextView)findViewById(R.id.route_time_label);
+		avgSpeedLabel = (TextView)findViewById(R.id.avg_speed_label);
+		
+		
+		//waypointName = (EditText)findViewById(R.id.waypoint_name);
+		//routeName = (EditText)findViewById(R.id.route_name);
+		//saveFileName = (EditText)findViewById(R.id.save_file_name);
 		routeStartButton = (Button)findViewById(R.id.route_start_button);
 		
 		LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
@@ -169,7 +178,23 @@ public class MainActivity extends Activity
 								
 								if (recordingRoute)
 								{
-									distanceLabel.setText(currentRouteName + " length: " + String.format("%.2f", routeLength * 3.28084) + "ft/" + String.format("%.2f", routeLength * 0.000621371) + "miles");
+									double distance = routeLength * 0.000621371;
+									distanceLabel.setText(String.format("%.2f", distance));
+									
+									long time = (System.currentTimeMillis() - startTime);
+								
+									long hours = TimeUnit.MILLISECONDS.toHours(time) % 24;
+									long minutes = TimeUnit.MILLISECONDS.toMinutes(time) % 60;
+									long seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60;
+
+									String t = String.format("%02d:%02d:%02d",
+														 hours, minutes, seconds);
+								
+									routeTimeLabel.setText(t);
+									
+									double h = time / (1000*60*60);
+									
+									avgSpeedLabel.setText(String.format("%.2f", distance/h) + "mph av");
 								}
 							}
 						});
@@ -219,8 +244,8 @@ public class MainActivity extends Activity
 		
 		SensorEventListener sensorListener = new SensorEventListener(){
 
-			private final float[] mAccelerometerReading = new float[3];
-			private final float[] mMagnetometerReading = new float[3];
+			private final float[] accelerometerReading = new float[3];
+			private final float[] magnetometerReading = new float[3];
 
 			private final float[] mRotationMatrix = new float[9];
 			private final float[] mOrientationAngles = new float[3];
@@ -229,25 +254,37 @@ public class MainActivity extends Activity
 			public void onSensorChanged(SensorEvent event)
 			{
 				if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
-					System.arraycopy(event.values, 0, mAccelerometerReading,
-									 0, mAccelerometerReading.length);
+					System.arraycopy(event.values, 0, accelerometerReading,
+									 0, accelerometerReading.length);
 				}
 				else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
-					System.arraycopy(event.values, 0, mMagnetometerReading,
-									 0, mMagnetometerReading.length);
+					System.arraycopy(event.values, 0, magnetometerReading,
+									 0, magnetometerReading.length);
 									 
-									// toast("M", true);
+									 //toast("M " + mMagnetometerReading[0] + " " + mMagnetometerReading[1] + " " + mMagnetometerReading[2], true);
 				}
 				
 				sensorManager.getRotationMatrix(mRotationMatrix, null,
-												 mAccelerometerReading, mMagnetometerReading);
+												 accelerometerReading, magnetometerReading);
 
 				// "mRotationMatrix" now has up-to-date information.
 
 				sensorManager.getOrientation(mRotationMatrix, mOrientationAngles);
 				
+				final float[] rotationMatrix = new float[9];
+				sensorManager.getRotationMatrix(rotationMatrix, null,
+												 accelerometerReading, magnetometerReading);
+
+// Express the updated rotation matrix as three orientation angles.
+				final float[] orientationAngles = new float[3];
+				sensorManager.getOrientation(rotationMatrix, orientationAngles);
+				
+				
 				String bearing = "";
-				float bear = mOrientationAngles[1];
+				double bear = orientationAngles[0] * 180/Math.PI;
+				
+				if (bear < 0) bear = 180-bear;
+				
 				float fourtyfivehalf = 45 / 2;
 
 				if (bear <= fourtyfivehalf && bear > -fourtyfivehalf) {
@@ -293,7 +330,7 @@ public class MainActivity extends Activity
 		
 		
 		
-		sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
+		//sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_NORMAL);
 		//sensorManager.registerListener(sensorListener, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_NORMAL);
 		//sensorManager.registerListener(sensorListener, Sensor.TYPE_MAGNETIC_FIELD,
 			//							SensorManager.SENSOR_DELAY_NORMAL, SensorManager.SENSOR_DELAY_UI);
@@ -304,34 +341,41 @@ public class MainActivity extends Activity
 	
 	public void waypointButtonClick(View view)
 	{
-		Waypoint waypoint = new Waypoint(waypointName.getText().toString(), lastLocation);
+		Waypoint waypoint = new Waypoint("POI", lastLocation);
 		waypoints.add(waypoint);
 		
 		ArrayList<Waypoint> wpl = new ArrayList();
 		
 		wpl.add(waypoint);
 		
-		SaveKML(wpl, null, waypointName.getText().toString());
+		SaveKML(wpl, null, "POI");
 
 		hideKeyboard(view);
 	}
 	
 	public void routeStartButtonClick(View view)
 	{
-		if (routeStartButton.getText() != "Pause")
+		if (routeStartButton.getText() != "Stop")
 		{
 			routeLength = 0.0;
-			currentRouteName = routeName.getText().toString();
+			currentRouteName = "Route";
 			recordingRoute = true;
+			startTime = System.currentTimeMillis();
 		
-			routeStartButton.setText("Pause");
+			routeStartButton.setText("Stop");
 		
-			Toast.makeText(getApplicationContext(), "Route " + currentRouteName + " started", Toast.LENGTH_LONG).show();
+			Toast.makeText(getApplicationContext(), "Route started", Toast.LENGTH_LONG).show();
 		}
 		else
 		{
 			recordingRoute = false;
-			routeStartButton.setText("Resume");
+			routeStartButton.setText("Start");
+			
+			HashMap<String, ArrayList<Waypoint>> rds = new HashMap<String, ArrayList<Waypoint>>();
+
+			rds.put(currentRouteName, routeData.get(currentRouteName));
+
+			SaveKML(null, rds, currentRouteName);
 		}
 
 		hideKeyboard(view);
@@ -339,40 +383,13 @@ public class MainActivity extends Activity
 
 	private void hideKeyboard(View view)
 	{
-		waypointName.clearFocus();
-		routeName.clearFocus();
-		saveFileName.clearFocus();
 		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
     	imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-	}
-	
-	public void routeStopButtonClick(View view)
-	{
-		recordingRoute = false;
-		
-		routeStartButton.setText("Start");
-		
-		HashMap<String, ArrayList<Waypoint>> rds = new HashMap<String, ArrayList<Waypoint>>();
-		
-		rds.put(currentRouteName, routeData.get(currentRouteName));
-		
-		SaveKML(null, rds, currentRouteName);
-
-		hideKeyboard(view);
 	}
 	
 	private void toast(String message, boolean longtoast)
 	{
 		Toast.makeText(getApplicationContext(), message, (longtoast?Toast.LENGTH_LONG:Toast.LENGTH_SHORT)).show();
-	}
-	
-	public void saveButtonClick(View view)
-	{
-		SaveKML(waypoints, routeData, saveFileName.getText().toString());
-		waypoints.clear();
-		routeData.clear();
-
-		hideKeyboard(view);
 	}
 	
 	public void SaveKML(ArrayList<Waypoint> wps, HashMap<String, ArrayList<Waypoint>> rds, String name)
