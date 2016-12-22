@@ -18,7 +18,7 @@
 			<TextView
 				android:id="@+id/distance_label"
 				android:text="0.0"
-				android:textSize="60sp"
+				android:textSize="70sp"
 				android:layout_gravity="center"
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content" />
@@ -40,7 +40,7 @@
 				<TextView
 					android:id="@+id/avg_speed_label"
 					android:text="0.0 mph av"
-					android:textSize="20sp"
+					android:textSize="30sp"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content" />
 				
@@ -53,7 +53,7 @@
 				<TextView
 					android:id="@+id/route_time_label"
 					android:text="00:00:00"
-					android:textSize="20sp"
+					android:textSize="30sp"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content" />
 				
@@ -264,16 +264,16 @@
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
             android:onClick="waypointButtonClick"
-            android:textSize="15sp"
+            android:textSize="25sp"
 			android:background="?android:colorBackground"
             android:text="POI"/>
 		
 		<Button
             android:id="@+id/route_start_button"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:onClick="routeStartButtonClick"
-            android:textSize="45sp"
+            android:textSize="65sp"
 			android:background="?android:colorBackground"
 			android:layout_weight="1"
             android:text="Start"/>
@@ -281,7 +281,7 @@
 		<Button
 			android:id="@+id/about_button"
 			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
+			android:layout_height="match_parent"
 			android:layout_gravity="bottom"
 			android:onClick="aboutButtonClick"
 			android:textSize="10sp"

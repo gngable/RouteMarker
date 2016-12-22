@@ -105,29 +105,31 @@ public class MainActivity extends Activity
 					
 					lastLocation = location;
 					
-					String bearing = "";
+					String bearing = null;
                     float bear = loc.getBearing();
-                    float fourtyfivehalf = 45 / 2;
+					if (bear != 0.0){
+                    	float fourtyfivehalf = 45 / 2;
 
-                    if (bear <= fourtyfivehalf && bear > -fourtyfivehalf) {
-                        bearing = "N";
-                    } else if (bear <= 45 + fourtyfivehalf && bear > 45 - fourtyfivehalf) {
-                        bearing = "NE";
-                    } else if (bear <= 90 + fourtyfivehalf && bear > 90 - fourtyfivehalf) {
-                        bearing = "E";
-                    } else if (bear <= 135 + fourtyfivehalf && bear > 135 - fourtyfivehalf) {
-                        bearing = "SE";
-                    } else if (bear <= 180 + fourtyfivehalf && bear > 180 - fourtyfivehalf) {
-                        bearing = "S";
-                    } else if (bear <= 225 + fourtyfivehalf && bear > 225 - fourtyfivehalf) {
-                        bearing = "SW";
-                    } else if (bear <= 270 + fourtyfivehalf && bear > 270 - fourtyfivehalf) {
-                        bearing = "W";
-                    } else if (bear <= 315 + fourtyfivehalf && bear > 315 - fourtyfivehalf) {
-                        bearing = "NW";
-                    }
+                    	if (bear <= fourtyfivehalf && bear > -fourtyfivehalf) {
+                        	bearing = "N";
+                    	} else if (bear <= 45 + fourtyfivehalf && bear > 45 - fourtyfivehalf) {
+                        	bearing = "NE";
+                    	} else if (bear <= 90 + fourtyfivehalf && bear > 90 - fourtyfivehalf) {
+                        	bearing = "E";
+                    	} else if (bear <= 135 + fourtyfivehalf && bear > 135 - fourtyfivehalf) {
+                        	bearing = "SE";
+                    	} else if (bear <= 180 + fourtyfivehalf && bear > 180 - fourtyfivehalf) {
+                        	bearing = "S";
+                    	} else if (bear <= 225 + fourtyfivehalf && bear > 225 - fourtyfivehalf) {
+                        	bearing = "SW";
+                    	} else if (bear <= 270 + fourtyfivehalf && bear > 270 - fourtyfivehalf) {
+                        	bearing = "W";
+                    	} else if (bear <= 315 + fourtyfivehalf && bear > 315 - fourtyfivehalf) {
+                        	bearing = "NW";
+                    	}
 
-                    bearing += " (" + bear + ")";
+                    	bearing += " (" + bear + ")";
+					}
 					
 					double acc = location.getAccuracy();
                     String accuracy = "";
@@ -173,7 +175,8 @@ public class MainActivity extends Activity
 								altitudeLabel.setText("Altitude: " + String.format("%.2f", loc.getAltitude() * 3.28084) + "ft");
 
 								accuracyLabel.setText("Accuracy: " + accuracylbl);
-								bearingLabel.setText("Bearing: " + bearinglbl);
+								if (bearinglbl != null)
+									bearingLabel.setText("Direction of travel: " + bearinglbl);
 								speedLabel.setText("Speed: " + String.format("%.2f", loc.getSpeed() * 2.23694) + " mph");
 								timeLabel.setText("GPS Date: " + date.toLocaleString());
 								
@@ -314,7 +317,7 @@ public class MainActivity extends Activity
 						@Override
 						public void run() {
 							
-							bearingLabel.setText("Bearing: " + bearinglbl);
+							bearingLabel.setText("Direction of travel: " + bearinglbl);
 							
 						}
 					});
