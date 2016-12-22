@@ -33,6 +33,7 @@ import java.io.*;
 import java.util.*;
 import android.hardware.*;
 import java.util.concurrent.*;
+import android.text.*;
 
 public class MainActivity extends Activity 
 {
@@ -341,15 +342,40 @@ public class MainActivity extends Activity
 	
 	public void waypointButtonClick(View view)
 	{
-		Waypoint waypoint = new Waypoint("POI", lastLocation);
-		waypoints.add(waypoint);
-		
-		ArrayList<Waypoint> wpl = new ArrayList();
-		
-		wpl.add(waypoint);
-		
-		SaveKML(wpl, null, "POI");
 
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setTitle("Enter a name for this point of interest");
+
+// Set up the input
+		final EditText input = new EditText(this);
+// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+		input.setInputType(InputType.TYPE_CLASS_TEXT);
+		builder.setView(input);
+
+// Set up the buttons
+		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { 
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					String name = input.getText().toString();
+					Waypoint waypoint = new Waypoint(name, lastLocation);
+					waypoints.add(waypoint);
+
+					ArrayList<Waypoint> wpl = new ArrayList();
+
+					wpl.add(waypoint);
+
+					SaveKML(wpl, null, name);
+				}
+			});
+		builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();
+				}
+			});
+
+		builder.show();
+	
 		hideKeyboard(view);
 	}
 	
@@ -371,14 +397,49 @@ public class MainActivity extends Activity
 			recordingRoute = false;
 			routeStartButton.setText("Start");
 			
-			HashMap<String, ArrayList<Waypoint>> rds = new HashMap<String, ArrayList<Waypoint>>();
+	
+	AlertDialog.Builder builder = new AlertDialog.Builder(this);
+	builder.setTitle("Name and save route?");
 
-			rds.put(currentRouteName, routeData.get(currentRouteName));
+// Set up the input
+	final EditText input = new EditText(this);
 
-			SaveKML(null, rds, currentRouteName);
+	input.setInputType(InputType.TYPE_CLASS_TEXT);
+	builder.setView(input);
+
+// Set up the buttons
+	builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { 
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        String name = input.getText().toString();
+		
+		HashMap<String, ArrayList<Waypoint>> rds = new HashMap<String, ArrayList<Waypoint>>();
+
+		rds.put(currentRouteName, routeData.get(currentRouteName));
+
+		SaveKML(waypoints, rds, name);
+		
+		routeData.clear();
+		waypoints.clear();
+    }
+	});
+	builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+    @Override
+    public void onClick(DialogInterface dialog, int which) {
+        dialog.cancel();
+		routeData.clear();
+		waypoints.clear();
+		
+    }
+	});
+
+	builder.show();
+			
+			
+			
 		}
 
-		hideKeyboard(view);
+		
 	}
 
 	private void hideKeyboard(View view)
@@ -447,7 +508,21 @@ public class MainActivity extends Activity
 			{
 				for (String key : rds.keySet())
 				{
-					writer.println("<Placemark><name>" + key + "</name><description>" + date + " " + key + "</description>");
+					writer.println("<Placemark><name>" + key + "</name><description>" + date + " " + key);
+					writer.println("Total distance: " + (routeLength * 0.000621371));
+					
+					long time = (System.currentTimeMillis() - startTime);
+
+					long hours = TimeUnit.MILLISECONDS.toHours(time) % 24;
+					long minutes = TimeUnit.MILLISECONDS.toMinutes(time) % 60;
+					long seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60;
+					
+					writer.println("Total time: " + String.format("%02d:%02d:%02d", hours, minutes, seconds));
+					
+					double ms = routeLength / (time / 1000);
+			
+					writer.println("Average speed: " + String.format("%.2f", (ms * 2.23694)) + " mph av");
+				    writer.println("</description>");
 					writer.println("<visibility>1</visibility><styleUrl>#yellowLineGreenPoly</styleUrl>");
 					writer.println("<LineString><extrude>1</extrude><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode>");
         			writer.println("<coordinates>");
