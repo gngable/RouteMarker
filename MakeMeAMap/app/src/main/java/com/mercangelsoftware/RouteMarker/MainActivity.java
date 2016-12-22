@@ -142,7 +142,7 @@ public class MainActivity extends Activity
 
                     accuracy += " (" + String.format("%.2f", acc * 3.28084) + "ft)";
 					
-					//final String bearinglbl = bearing;
+					final String bearinglbl = bearing;
                     final String accuracylbl = accuracy;
 					final Date date = new Date(loc.getTime());
 					
@@ -172,7 +172,7 @@ public class MainActivity extends Activity
 								altitudeLabel.setText("Altitude: " + String.format("%.2f", loc.getAltitude() * 3.28084) + "ft");
 
 								accuracyLabel.setText("Accuracy: " + accuracylbl);
-								//bearingLabel.setText("Bearing: " + bearinglbl);
+								bearingLabel.setText("Bearing: " + bearinglbl);
 								speedLabel.setText("Speed: " + String.format("%.2f", loc.getSpeed() * 2.23694) + " mph");
 								timeLabel.setText("GPS Date: " + date.toLocaleString());
 								
@@ -192,9 +192,9 @@ public class MainActivity extends Activity
 								
 									routeTimeLabel.setText(t);
 									
-									double h = time / (1000*60*60);
+									double ms = routeLength / (time / 1000);
 									
-									avgSpeedLabel.setText(String.format("%.2f", distance/h) + "mph av");
+									avgSpeedLabel.setText(String.format("%.2f", (ms * 2.23694)) + " mph av");
 								}
 							}
 						});
