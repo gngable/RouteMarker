@@ -466,16 +466,22 @@ public class MainActivity extends Activity
 		String date = new Date().toLocaleString().replaceAll("/", "-").replaceAll(",", "")
 		.replaceAll(" ", "_").replaceAll(":", ".");
 		
+		String dir ="";
+		
+		if (rds == null) dir = "POI/";
+		
 		try
 		{
-			//File dir = new File(getExternalFilesDir(null) + "/" + date);
+			if (dir != ""){
+				File directory = new File(getExternalFilesDir(null) + "/" + dir);
 			
-			//if (!dir.exists())
-			//{
-				//dir.mkdir();
-			//}
+				if (!directory.exists())
+				{
+					directory.mkdir();
+				}
+			}
 			
-			File f = new File(getExternalFilesDir(null) + "/" + date + "_" + filename);
+			File f = new File(getExternalFilesDir(null) + "/" + dir + date + "_" + filename);
 			writer = new PrintWriter(f, "UTF-8");
 			
 			writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
