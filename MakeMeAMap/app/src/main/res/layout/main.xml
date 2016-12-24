@@ -266,7 +266,7 @@
             android:onClick="waypointButtonClick"
             android:textSize="25sp"
 			android:background="?android:colorBackground"
-            android:text="POI"/>
+            android:text="Mark\nSpot"/>
 
 		<Button
             android:id="@+id/route_start_button"
@@ -284,7 +284,7 @@
 			android:layout_height="match_parent"
 			android:layout_gravity="bottom"
 			android:onClick="aboutButtonClick"
-			android:textSize="10sp"
+			android:textSize="20sp"
 			android:background="?android:colorBackground"
 			android:text="About"/>
 

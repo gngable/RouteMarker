@@ -489,6 +489,7 @@ public class MainActivity extends Activity
 
 						routeData.clear();
 						waypoints.clear();
+						displayRouteStats();
 					}
 				});
 			builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -498,11 +499,31 @@ public class MainActivity extends Activity
 						dialog.cancel();
 						routeData.clear();
 						waypoints.clear();
+						displayRouteStats();
 					}
 				});
 
 			builder.show();
 		}
+	}
+	
+	private void displayRouteStats(){
+		String stats = "Route stats:";
+		long time = (System.currentTimeMillis() - startTime);
+
+		long hours = TimeUnit.MILLISECONDS.toHours(time) % 24;
+		long minutes = TimeUnit.MILLISECONDS.toMinutes(time) % 60;
+		long seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60;
+
+		stats += "\nTime: " + String.format("%02d:%02d:%02d", hours, minutes, seconds);
+		
+		stats += "\nDistance: " + (routeLength * 0.000621371);
+		
+		double ms = routeLength / (time / 1000);
+
+		stats += "\nAverage speed: " + String.format("%.2f", (ms * 2.23694)) + " mph";
+		
+		showDialog(stats);
 	}
 
 	private void hideKeyboard(View view)
@@ -637,7 +658,7 @@ public class MainActivity extends Activity
 	public void aboutButtonClick(View view)
 	{
 		showDialog("Created by Nick Gable (Mercangel Software)" + 
-				   "\nFiles saved to " + getExternalFilesDir(null));
+				   "\n\nFiles saved to " + getExternalFilesDir(null));
 	}
 
 	public void showDialog(String message)
