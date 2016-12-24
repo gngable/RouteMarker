@@ -96,6 +96,26 @@ public class MainActivity extends Activity
 		
 		LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
 		
+		boolean gps_enabled = false;
+
+		try {
+			gps_enabled = lm.isProviderEnabled(LocationManager.GPS_PROVIDER);
+		} catch(Exception ex) {}
+
+		if(!gps_enabled) {
+			// notify user
+			AlertDialog.Builder dialog = new AlertDialog.Builder(this);
+			dialog.setMessage("Location services are not enabled, please enable and restart this app.");
+			dialog.setPositiveButton("OK", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface paramDialogInterface, int paramInt) {
+						System.exit(0);
+					}
+				});
+			
+			dialog.show();
+		}
+		
 		lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 500, 0, new LocationListener(){
 
 				@Override
@@ -570,11 +590,21 @@ public class MainActivity extends Activity
 			if (writer != null) writer.close();
 		}
 		
-		toast("Save complete " + getExternalFilesDir(null) + "/" + date + "_" + filename, true);
+		showDialog("Save complete " + getExternalFilesDir(null) + "/" + dir + date + "_" + filename);
 	}
 	
 	public void aboutButtonClick(View view)
 	{
-		toast("Created by Nick Gable (Mercangel Software)", true);
+		//AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		showDialog("Created by Nick Gable (Mercangel Software)" + 
+						   "\nFiles saved to " + getExternalFilesDir(null));
+		
+		//toast("Created by Nick Gable (Mercangel Software)", true);
+	}
+	
+	public void showDialog(String message){
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(message);
+		builder.show();
 	}
 }
