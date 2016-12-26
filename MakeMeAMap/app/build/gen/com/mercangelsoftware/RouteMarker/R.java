@@ -14,7 +14,6 @@ public final class R {
         public static final int ic_launcher=0x7f020000;
     }
     public static final class id {
-        public static final int about_button=0x7f06000d;
         public static final int accuracy_label=0x7f060006;
         public static final int altitude_label=0x7f060005;
         public static final int avg_speed_label=0x7f060001;
@@ -23,6 +22,7 @@ public final class R {
         public static final int gps_status_label=0x7f06000a;
         public static final int latitude_label=0x7f060004;
         public static final int longitude_label=0x7f060003;
+        public static final int map_button=0x7f06000d;
         public static final int route_start_button=0x7f06000c;
         public static final int route_time_label=0x7f060002;
         public static final int speed_label=0x7f060008;

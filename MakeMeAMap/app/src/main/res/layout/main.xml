@@ -18,6 +18,7 @@
 			<TextView
 				android:id="@+id/distance_label"
 				android:text="0.0"
+				android:onClick="aboutButtonClick"
 				android:textSize="70sp"
 				android:layout_gravity="center"
 				android:layout_width="wrap_content"
@@ -279,14 +280,14 @@
             android:text="Start"/>
 
 		<Button
-			android:id="@+id/about_button"
+			android:id="@+id/map_button"
 			android:layout_width="wrap_content"
 			android:layout_height="match_parent"
 			android:layout_gravity="bottom"
-			android:onClick="aboutButtonClick"
+			android:onClick="mapButtonClick"
 			android:textSize="20sp"
 			android:background="?android:colorBackground"
-			android:text="About"/>
+			android:text="Map"/>
 
 
 	</LinearLayout>

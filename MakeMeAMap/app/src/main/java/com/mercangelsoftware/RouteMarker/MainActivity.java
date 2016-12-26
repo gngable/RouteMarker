@@ -34,6 +34,7 @@ import java.util.*;
 import android.hardware.*;
 import java.util.concurrent.*;
 import android.text.*;
+import android.net.*;
 
 public class MainActivity extends Activity 
 {
@@ -48,12 +49,7 @@ public class MainActivity extends Activity
 	TextView distanceLabel;
 	TextView routeTimeLabel;
 	TextView avgSpeedLabel;
-	//EditText waypointName;
-	//EditText routeName;
-	//EditText saveFileName;
 	Button routeStartButton;
-
-	//private SensorManager sensorManager;
 
 	Location lastLocation;
 	int lastStatus = -1;
@@ -67,6 +63,7 @@ public class MainActivity extends Activity
 	Location lastRouteLocation;
 	double routeLength = 0.0;
 	long startTime;
+	String CurrentKML = null;
 
 
     @Override
@@ -75,7 +72,6 @@ public class MainActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-		//statusLabel = (TextView)findViewById(R.id.status_label);
 		longitudeLabel = (TextView)findViewById(R.id.longitude_label);
 		latitudeLabel = (TextView)findViewById(R.id.latitude_label);
 		altitudeLabel = (TextView)findViewById(R.id.altitude_label);
@@ -87,11 +83,6 @@ public class MainActivity extends Activity
 		distanceLabel = (TextView)findViewById(R.id.distance_label);
 		routeTimeLabel = (TextView)findViewById(R.id.route_time_label);
 		avgSpeedLabel = (TextView)findViewById(R.id.avg_speed_label);
-
-
-		//waypointName = (EditText)findViewById(R.id.waypoint_name);
-		//routeName = (EditText)findViewById(R.id.route_name);
-		//saveFileName = (EditText)findViewById(R.id.save_file_name);
 		routeStartButton = (Button)findViewById(R.id.route_start_button);
 
 		LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
@@ -276,8 +267,6 @@ public class MainActivity extends Activity
 					}
 
 					gpsStatusLabel.setText("GPS Status: " + statustext);
-
-					//Toast.makeText(getApplicationContext(), provider + ":" + statustext, Toast.LENGTH_LONG).show();
 				}
 
 				@Override
@@ -383,7 +372,6 @@ public class MainActivity extends Activity
 						@Override
 						public void run()
 						{
-
 							bearingLabel.setText("Direction of travel: " + bearinglbl);
 						}
 					});
@@ -408,17 +396,14 @@ public class MainActivity extends Activity
 
 	public void waypointButtonClick(View view)
 	{
-
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		builder.setTitle("Enter a name for this point of interest");
+		builder.setTitle("Enter a name?");
 
-// Set up the input
 		final EditText input = new EditText(this);
-// Specify the type of input expected; this, for example, sets the input as a password, and will mask the text
+
 		input.setInputType(InputType.TYPE_CLASS_TEXT);
 		builder.setView(input);
 
-// Set up the buttons
 		builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { 
 				@Override
 				public void onClick(DialogInterface dialog, int which)
@@ -468,13 +453,11 @@ public class MainActivity extends Activity
 			AlertDialog.Builder builder = new AlertDialog.Builder(this);
 			builder.setTitle("Name and save route?");
 
-// Set up the input
 			final EditText input = new EditText(this);
 
 			input.setInputType(InputType.TYPE_CLASS_TEXT);
 			builder.setView(input);
 
-// Set up the buttons
 			builder.setPositiveButton("OK", new DialogInterface.OnClickListener() { 
 					@Override
 					public void onClick(DialogInterface dialog, int which)
@@ -482,14 +465,15 @@ public class MainActivity extends Activity
 						String name = input.getText().toString();
 
 						HashMap<String, ArrayList<Waypoint>> rds = new HashMap<String, ArrayList<Waypoint>>();
-						
+
 						rds.put(currentRouteName, routeData.get(currentRouteName));
 
-						SaveKML(waypoints, rds, name);
+						CurrentKML = SaveKML(waypoints, rds, name);
 
 						routeData.clear();
 						waypoints.clear();
 						displayRouteStats();
+						showDialog("Save complete: " + CurrentKML);
 					}
 				});
 			builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -507,7 +491,38 @@ public class MainActivity extends Activity
 		}
 	}
 	
-	private void displayRouteStats(){
+	private void displayKML(String kml){
+		try{
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			intent.setDataAndType(Uri.parse("geo:0,0?q=file://" + kml),
+					"application/kml");
+			startActivity(intent);
+			return;
+		} catch (Exception ex){
+			//showDialog(ex.getMessage());
+		}
+		
+		try {
+			Intent i = getPackageManager().getLaunchIntentForPackage("com.google.maps");
+			i.setDataAndType(Uri.fromFile(new File(kml)), "xml");
+			startActivity(i);
+			return;
+		} catch (Exception ex){
+			
+		}
+		
+		try {
+			Intent i = getPackageManager().getLaunchIntentForPackage("com.google.earth");
+			i.setDataAndType(Uri.fromFile(new File(kml)), "xml");
+			startActivity(i);
+			return;
+		} catch (Exception ex){
+
+		}
+	}
+
+	private void displayRouteStats()
+	{
 		String stats = "Route stats:";
 		long time = (System.currentTimeMillis() - startTime);
 
@@ -516,13 +531,13 @@ public class MainActivity extends Activity
 		long seconds = TimeUnit.MILLISECONDS.toSeconds(time) % 60;
 
 		stats += "\nTime: " + String.format("%02d:%02d:%02d", hours, minutes, seconds);
-		
+
 		stats += "\nDistance: " + (routeLength * 0.000621371);
-		
+
 		double ms = routeLength / (time / 1000);
 
 		stats += "\nAverage speed: " + String.format("%.2f", (ms * 2.23694)) + " mph";
-		
+
 		showDialog(stats);
 	}
 
@@ -537,7 +552,7 @@ public class MainActivity extends Activity
 		Toast.makeText(getApplicationContext(), message, (longtoast ?Toast.LENGTH_LONG: Toast.LENGTH_SHORT)).show();
 	}
 
-	public void SaveKML(ArrayList<Waypoint> wps, HashMap<String, ArrayList<Waypoint>> rds, String name)
+	public String SaveKML(ArrayList<Waypoint> wps, HashMap<String, ArrayList<Waypoint>> rds, String name)
 	{
 		toast("Saving " + name, false);
 		PrintWriter writer = null;
@@ -551,6 +566,8 @@ public class MainActivity extends Activity
 
 		if (rds == null) dir = "POI/";
 
+		String filepath = getExternalFilesDir(null) + "/" + dir + date + "_" + filename;
+
 		try
 		{
 			if (dir != "")
@@ -563,7 +580,7 @@ public class MainActivity extends Activity
 				}
 			}
 
-			File f = new File(getExternalFilesDir(null) + "/" + dir + date + "_" + filename);
+			File f = new File(filepath);
 			writer = new PrintWriter(f, "UTF-8");
 
 			writer.println("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
@@ -635,24 +652,24 @@ public class MainActivity extends Activity
 		catch (UnsupportedEncodingException e)
 		{
 			toast("1 " + e.getMessage(), true);
-			return;
+			return null;
 		}
 		catch (FileNotFoundException e)
 		{
 			toast("2 " + e.getMessage(), true);
-			return;
+			return null;
 		}
 		catch (Exception e)
 		{
 			toast("3 " + e.getMessage(), true);
-			return;
+			return null;
 		}
 		finally
 		{
 			if (writer != null) writer.close();
 		}
 
-		showDialog("Save complete " + getExternalFilesDir(null) + "/" + dir + date + "_" + filename);
+		return filepath;
 	}
 
 	public void aboutButtonClick(View view)
@@ -666,5 +683,22 @@ public class MainActivity extends Activity
 		AlertDialog.Builder builder = new AlertDialog.Builder(this);
 		builder.setMessage(message);
 		builder.show();
+	}
+	
+	public void mapButtonClick(View view)
+	{
+		if (recordingRoute){
+			HashMap<String, ArrayList<Waypoint>> rds = new HashMap<String, ArrayList<Waypoint>>();
+
+			rds.put(currentRouteName, routeData.get(currentRouteName));
+
+			String temp = SaveKML(waypoints, rds, "temp");
+			
+			displayKML(temp);
+		} else if (CurrentKML != null){
+			displayKML(CurrentKML);
+		} else{
+			showDialog("Nothing to map yet");
+		}
 	}
 }
