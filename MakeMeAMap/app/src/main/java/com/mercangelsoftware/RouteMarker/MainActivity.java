@@ -494,26 +494,27 @@ public class MainActivity extends Activity
 	private void displayKML(String kml){
 		try{
 			Intent intent = new Intent(Intent.ACTION_VIEW);
-			intent.setDataAndType(Uri.parse("geo:0,0?q=file://" + kml),
-					"application/kml");
+			intent.setDataAndType(Uri.fromFile(new File(kml)),
+					"kml");
 			startActivity(intent);
-			return;
+			//return;
 		} catch (Exception ex){
 			//showDialog(ex.getMessage());
 		}
-		
-		try {
-			Intent i = getPackageManager().getLaunchIntentForPackage("com.google.maps");
-			i.setDataAndType(Uri.fromFile(new File(kml)), "xml");
-			startActivity(i);
-			return;
-		} catch (Exception ex){
-			
-		}
+//		
+//		try {
+//			Intent i = getPackageManager().getLaunchIntentForPackage("com.google.maps");
+//			i.setDataAndType(Uri.fromFile(new File(kml)), "xml");
+//			startActivity(i);
+//			return;
+//		} catch (Exception ex){
+//			
+//		}
 		
 		try {
 			Intent i = getPackageManager().getLaunchIntentForPackage("com.google.earth");
-			i.setDataAndType(Uri.fromFile(new File(kml)), "xml");
+			if (kml != "")
+				i.setDataAndType(Uri.fromFile(new File(kml)), "xml");
 			startActivity(i);
 			return;
 		} catch (Exception ex){
@@ -557,7 +558,7 @@ public class MainActivity extends Activity
 		toast("Saving " + name, false);
 		PrintWriter writer = null;
 
-		String filename = name.replaceAll(" ", "_") + ".kml";
+		String filename = name.replaceAll(" ", "_") + ".xml";
 
 		String date = new Date().toLocaleString().replaceAll("/", "-").replaceAll(",", "")
 			.replaceAll(" ", "_").replaceAll(":", ".");
@@ -604,12 +605,12 @@ public class MainActivity extends Activity
 				}
 			}
 
-			writer.println("<Style id=\"yellowLineGreenPoly\">");
+			writer.println("<Style id=\"myLine\">");
 			writer.println("<LineStyle>");
-			writer.println("<color>7f00ffff</color>");
-			writer.println("<width>4</width>");
+			writer.println("<color>ff0000ff</color><width>5</width>");
+			//writer.println("<width>4</width>");
 			writer.println("</LineStyle>");
-			writer.println("<PolyStyle><color>7f00ff00</color></PolyStyle>");
+			//writer.println("<PolyStyle><color>7f00ff00</color></PolyStyle>");
 			writer.println("</Style>");
 
 			if (rds != null && rds.size() > 0)
@@ -631,15 +632,16 @@ public class MainActivity extends Activity
 
 					writer.println("Average speed: " + String.format("%.2f", (ms * 2.23694)) + " mph av");
 				    writer.println("</description>");
-					writer.println("<visibility>1</visibility><styleUrl>#yellowLineGreenPoly</styleUrl>");
-					writer.println("<LineString><extrude>1</extrude><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode>");
+					writer.println("<styleUrl>#myLine</styleUrl>");
+					writer.println("<visibility>1</visibility>");
+					writer.println("<LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode>");
         			writer.println("<coordinates>");
 
 					for (Waypoint wp : rds.get(key))
 					{
 						writer.println(Double.toString(wp.Longitude) +
 									   "," + wp.Latitude +
-									   "," + wp.Altitude);
+									   "," + (wp.Altitude ));
 					}
 
 					writer.println("</coordinates></LineString>");
@@ -687,6 +689,8 @@ public class MainActivity extends Activity
 	
 	public void mapButtonClick(View view)
 	{
+		//displayKML(getExternalFilesDir(null) + "/zoo.xml");
+		
 		if (recordingRoute){
 			HashMap<String, ArrayList<Waypoint>> rds = new HashMap<String, ArrayList<Waypoint>>();
 
@@ -698,7 +702,8 @@ public class MainActivity extends Activity
 		} else if (CurrentKML != null){
 			displayKML(CurrentKML);
 		} else{
-			showDialog("Nothing to map yet");
+			displayKML("");
+			//showDialog("Nothing to map yet");
 		}
 	}
 }
