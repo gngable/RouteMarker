@@ -1,6 +1,6 @@
 // MIT License
 
-// Copyright (c) 2016 Nick Gable (Mercangel Software)
+// Copyright (c) 2017 Nick Gable (Mercangel Software)
 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
 // of this software and associated documentation files (the "Software"), to deal
@@ -605,7 +605,7 @@ public class MainActivity extends Activity
 				}
 			}
 
-			writer.println("<Style id=\"myLine\">");
+			writer.println("<Style id=\"" + name +"style\">");
 			writer.println("<LineStyle>");
 			writer.println("<color>ff0000ff</color><width>5</width>");
 			//writer.println("<width>4</width>");
@@ -617,8 +617,8 @@ public class MainActivity extends Activity
 			{
 				for (String key : rds.keySet())
 				{
-					writer.println("<Placemark><name>" + key + "</name><description>" + date + " " + key);
-					writer.println("Total distance: " + (routeLength * 0.000621371));
+					writer.println("<Placemark><name>" + name + "</name><description>" + date + " " + name);
+					writer.println("Total distance: " + (routeLength * 0.000621371) + " mi");
 
 					long time = (System.currentTimeMillis() - startTime);
 
@@ -632,7 +632,7 @@ public class MainActivity extends Activity
 
 					writer.println("Average speed: " + String.format("%.2f", (ms * 2.23694)) + " mph av");
 				    writer.println("</description>");
-					writer.println("<styleUrl>#myLine</styleUrl>");
+					writer.println("<styleUrl>#" + name + "style</styleUrl>");
 					writer.println("<visibility>1</visibility>");
 					writer.println("<LineString><tessellate>1</tessellate><altitudeMode>clampToGround</altitudeMode>");
         			writer.println("<coordinates>");
