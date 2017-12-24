@@ -50,6 +50,7 @@ public class MainActivity extends Activity
 	TextView routeTimeLabel;
 	TextView avgSpeedLabel;
 	Button routeStartButton;
+	CheckBox metricCheckbox;
 
 	Location lastLocation;
 	int lastStatus = -1;
@@ -84,7 +85,8 @@ public class MainActivity extends Activity
 		routeTimeLabel = (TextView)findViewById(R.id.route_time_label);
 		avgSpeedLabel = (TextView)findViewById(R.id.avg_speed_label);
 		routeStartButton = (Button)findViewById(R.id.route_start_button);
-
+		metricCheckbox = (CheckBox)findViewById(R.id.metric_checkbox);
+		
 		LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
 
 		boolean gps_enabled = false;
@@ -217,13 +219,29 @@ public class MainActivity extends Activity
 								accuracyLabel.setText("Accuracy: " + accuracylbl);
 								if (bearinglbl != null)
 									bearingLabel.setText("Direction of travel: " + bearinglbl);
-								speedLabel.setText("Speed: " + String.format("%.2f", loc.getSpeed() * 2.23694) + " mph");
+									
+								if (!metricCheckbox.isChecked())
+								{
+									speedLabel.setText("Speed: " + String.format("%.2f", loc.getSpeed() * 2.23694) + " mph");
+								}
+								else
+								{
+									speedLabel.setText("Speed: " + String.format("%.2f", loc.getSpeed() * 3.6) + " kph");
+								}
+									
 								timeLabel.setText("GPS Date: " + date.toLocaleString());
 
 								if (recordingRoute)
 								{
-									double distance = routeLength * 0.000621371;
-									distanceLabel.setText(String.format("%.2f", distance));
+									if (!metricCheckbox.isChecked())
+									{
+										double distance = routeLength * 0.000621371;
+										distanceLabel.setText(String.format("%.2f mi", distance));
+									}
+									else
+									{
+										distanceLabel.setText(String.format("%.2f km", (routeLength / 1000)));
+									}
 
 									long time = (System.currentTimeMillis() - startTime);
 
@@ -237,8 +255,15 @@ public class MainActivity extends Activity
 									routeTimeLabel.setText(t);
 
 									double ms = routeLength / (time / 1000);
-
-									avgSpeedLabel.setText(String.format("%.2f", (ms * 2.23694)) + " mph av");
+									
+									if (!metricCheckbox.isChecked())
+									{
+										avgSpeedLabel.setText(String.format("%.2f", (ms * 2.23694)) + " mph av");
+									}
+									else
+									{
+										avgSpeedLabel.setText(String.format("%.2f", (ms * 3.6)) + " kph av");
+									}
 								}
 							}
 						});

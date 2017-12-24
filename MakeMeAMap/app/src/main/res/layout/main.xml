@@ -24,12 +24,12 @@
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content" />
 
-			<TextView
+			<!--TextView
 				android:text="mi"
 				android:textSize="15sp"
 				android:layout_gravity="center"
 				android:layout_width="wrap_content"
-				android:layout_height="wrap_content" />
+				android:layout_height="wrap_content" /-->
 
 
 			<LinearLayout
@@ -247,6 +247,19 @@
 	android:text="Save"/>
 
 	</LinearLayout-->
+	
+	<View
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="3dp"
+        android:layout_marginBottom="3dp"
+        android:background="@android:color/darker_gray"/>
+	
+	<CheckBox
+		android:id="@+id/metric_checkbox"
+		android:layout_width="match_parent"
+        android:layout_height="wrap_content" 
+		android:text="Metric"/>
 
 	<View
         android:layout_width="match_parent"
