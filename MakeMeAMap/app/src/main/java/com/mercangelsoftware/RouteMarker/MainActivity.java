@@ -35,6 +35,7 @@ import android.hardware.*;
 import java.util.concurrent.*;
 import android.text.*;
 import android.net.*;
+import java.lang.reflect.*;
 
 public class MainActivity extends Activity 
 {
@@ -47,6 +48,7 @@ public class MainActivity extends Activity
 	TextView timeLabel;
 	TextView gpsStatusLabel;
 	TextView distanceLabel;
+	TextView distanceUnitsLabel;
 	TextView routeTimeLabel;
 	TextView avgSpeedLabel;
 	Button routeStartButton;
@@ -65,6 +67,7 @@ public class MainActivity extends Activity
 	double routeLength = 0.0;
 	long startTime;
 	String CurrentKML = null;
+	boolean metric = false;
 
 
     @Override
@@ -86,6 +89,7 @@ public class MainActivity extends Activity
 		avgSpeedLabel = (TextView)findViewById(R.id.avg_speed_label);
 		routeStartButton = (Button)findViewById(R.id.route_start_button);
 		metricCheckbox = (CheckBox)findViewById(R.id.metric_checkbox);
+		distanceUnitsLabel = (TextView)findViewById(R.id.distance_units_label);
 		
 		LocationManager lm = (LocationManager)getSystemService(LOCATION_SERVICE);
 
@@ -184,7 +188,16 @@ public class MainActivity extends Activity
                         accuracy = "Poor";
                     }
 
-                    accuracy += " (" + String.format("%.2f", acc * 3.28084) + "ft)";
+					if (!metricCheckbox.isChecked())
+					{
+						metric = false;
+						accuracy += " (" + String.format("%.2f", acc * 3.28084) + " ft)";
+					}
+					else
+					{
+						metric = true;
+						accuracy += " (" + String.format("%.2f", acc) + " m)";
+					}
 
 					final String bearinglbl = bearing;
                     final String accuracylbl = accuracy;
@@ -217,16 +230,21 @@ public class MainActivity extends Activity
 								altitudeLabel.setText("Altitude: " + String.format("%.2f", loc.getAltitude() * 3.28084) + "ft");
 
 								accuracyLabel.setText("Accuracy: " + accuracylbl);
+								
 								if (bearinglbl != null)
 									bearingLabel.setText("Direction of travel: " + bearinglbl);
 									
 								if (!metricCheckbox.isChecked())
 								{
+									altitudeLabel.setText("Altitude: " + String.format("%.2f", loc.getAltitude() * 3.28084) + " ft");
 									speedLabel.setText("Speed: " + String.format("%.2f", loc.getSpeed() * 2.23694) + " mph");
+									distanceUnitsLabel.setText("mi");
 								}
 								else
 								{
-									speedLabel.setText("Speed: " + String.format("%.2f", loc.getSpeed() * 3.6) + " kph");
+									altitudeLabel.setText("Altitude: " + String.format("%.2f", loc.getAltitude()) + " m");
+									speedLabel.setText("Speed: " + String.format("%.2f", loc.getSpeed() * 3.6) + " km/h");
+									distanceUnitsLabel.setText("km");
 								}
 									
 								timeLabel.setText("GPS Date: " + date.toLocaleString());
@@ -236,11 +254,11 @@ public class MainActivity extends Activity
 									if (!metricCheckbox.isChecked())
 									{
 										double distance = routeLength * 0.000621371;
-										distanceLabel.setText(String.format("%.2f mi", distance));
+										distanceLabel.setText(String.format("%.2f", distance));
 									}
 									else
 									{
-										distanceLabel.setText(String.format("%.2f km", (routeLength / 1000)));
+										distanceLabel.setText(String.format("%.2f", (routeLength / 1000)));
 									}
 
 									long time = (System.currentTimeMillis() - startTime);
@@ -262,7 +280,7 @@ public class MainActivity extends Activity
 									}
 									else
 									{
-										avgSpeedLabel.setText(String.format("%.2f", (ms * 3.6)) + " kph av");
+										avgSpeedLabel.setText(String.format("%.2f", (ms * 3.6)) + " km/h av");
 									}
 								}
 							}
@@ -558,11 +576,18 @@ public class MainActivity extends Activity
 
 		stats += "\nTime: " + String.format("%02d:%02d:%02d", hours, minutes, seconds);
 
-		stats += "\nDistance: " + (routeLength * 0.000621371);
-
 		double ms = routeLength / (time / 1000);
-
-		stats += "\nAverage speed: " + String.format("%.2f", (ms * 2.23694)) + " mph";
+		
+		if (!metric)
+		{
+			stats += "\nDistance: " + (routeLength * 0.000621371) + " mi";
+			stats += "\nAverage speed: " + String.format("%.2f", (ms * 2.23694)) + " mph";
+		}
+		else
+		{
+			stats += "\nDistance: " + (routeLength / 1000) + " km";
+			stats += "\nAverage speed: " + String.format("%.2f", (ms * 3.6)) + " km/h";
+		}
 
 		showDialog(stats);
 	}
@@ -643,7 +668,6 @@ public class MainActivity extends Activity
 				for (String key : rds.keySet())
 				{
 					writer.println("<Placemark><name>" + name + "</name><description>" + date + " " + name);
-					writer.println("Total distance: " + (routeLength * 0.000621371) + " mi");
 
 					long time = (System.currentTimeMillis() - startTime);
 
@@ -654,8 +678,18 @@ public class MainActivity extends Activity
 					writer.println("Total time: " + String.format("%02d:%02d:%02d", hours, minutes, seconds));
 
 					double ms = routeLength / (time / 1000);
+					
+					if (!metric)
+					{
+						writer.println("Total distance: " + (routeLength * 0.000621371) + " mi");
+						writer.println("Average speed: " + String.format("%.2f", (ms * 2.23694)) + " mph av");
+					}
+					else
+					{
+						writer.println("Total distance: " + (routeLength / 1000) + " km");
+						writer.println("Average speed: " + String.format("%.2f", (ms * 3.6)) + " km/h av");
+					}
 
-					writer.println("Average speed: " + String.format("%.2f", (ms * 2.23694)) + " mph av");
 				    writer.println("</description>");
 					writer.println("<styleUrl>#" + name + "style</styleUrl>");
 					writer.println("<visibility>1</visibility>");
